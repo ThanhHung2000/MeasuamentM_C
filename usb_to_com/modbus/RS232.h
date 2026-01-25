@@ -56,7 +56,6 @@ typedef union {
     struct {
     	uint8_t Home :1;
     	uint8_t Engine :1;
-
         uint8_t reserved : 6;
 
     } bits;

@@ -166,6 +166,7 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz,float freq_max )// 
 	float deltaX=(float)( posx > Rotbot_axis[0].current_pos ? posx-Rotbot_axis[0].current_pos : Rotbot_axis[0].current_pos - posx);
 	float deltaY=(float)( posy > Rotbot_axis[1].current_pos ? posy-Rotbot_axis[1].current_pos : Rotbot_axis[1].current_pos - posy);
 	float Lmax = (deltaX > deltaY) ? deltaX : deltaY;
+	MC_MoveAbsolute(&Rotbot_axis[2],posz,freq_max);
 	if(Lmax==0x00U) return 0;
 	uint32_t freqx=(uint32_t)((freq_max*deltaX/Lmax));
 	uint32_t freqy=(uint32_t)((freq_max*deltaY/Lmax));

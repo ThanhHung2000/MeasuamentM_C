@@ -1,3 +1,3 @@
 ../modbus/RS232.c:34:6:HMI_Init	8	static
-../modbus/RS232.c:37:9:DecodeModbusRtu	24	static
-../modbus/RS232.c:52:6:HAL_UARTEx_RxEventCallback	16	static
+../modbus/RS232.c:38:9:DecodeModbusRtu	24	static
+../modbus/RS232.c:53:6:HAL_UARTEx_RxEventCallback	16	static

@@ -1,6 +1,7 @@
 "./Core/Src/drive.o"
 "./Core/Src/drive_time.o"
 "./Core/Src/main.o"
+"./Core/Src/mgr_hmi.o"
 "./Core/Src/stm32f4xx_hal_msp.o"
 "./Core/Src/stm32f4xx_it.o"
 "./Core/Src/syscalls.o"
@@ -40,4 +41,3 @@
 "./modbus/modbusSlave.o"
 "./modbus/modbus_crc.o"
 "./modbus/motor.o"
-"./modbus/tim_base.o"

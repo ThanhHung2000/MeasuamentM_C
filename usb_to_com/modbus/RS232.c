@@ -13,7 +13,7 @@ uint8_t TxData[RX_BUF_SIZE];
 
 Control_motor_t* Control_motor = (Control_motor_t*)&Coils_Database[1];
 Tab_Control_t* Tab = (Tab_Control_t*)&Coils_Database[0];
-Save_Tray_t* Save_Tray = (Save_Tray_t*)&Coils_Database[4];
+Save_Tray_t* Save_Tray = (Save_Tray_t*)&Coils_Database[3];
 Save_Tray_t* Save_Tray_Indicator = (Save_Tray_t*)&Coils_Database[3];
 Home_Lamp_t* Home_Lamp = (Home_Lamp_t*)&Inputs_Database[0];
 Worker_Control_t* Worker_Control = (Worker_Control_t*)&Coils_Database[2];
@@ -31,7 +31,8 @@ uint16_t* Mark = &Holding_Registers_Database[3];
 uint16_t Glass_Index = 0;
 uint8_t end_Cover = 25;
 
-void HMI_Init(void){
+void HMI_Init(void)
+{
 	HAL_UARTEx_ReceiveToIdle_DMA(&huart2, RxData, RX_BUF_SIZE);
 }
 uint8_t DecodeModbusRtu(const uint8_t *data, uint16_t length )

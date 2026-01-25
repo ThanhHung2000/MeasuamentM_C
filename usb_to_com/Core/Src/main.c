@@ -25,6 +25,7 @@
 #include "drive.h"
 #include"drive_time.h"
 #include "RS232.h"
+#include "mgr_hmi.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -72,7 +73,6 @@ static void MX_TIM7_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 uint8_t time_on=0x00;
-uint32_t pos=5000;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -135,11 +135,7 @@ int main(void)
 		time_on=Delay_GetTimer(TID_TIMER_1ms);
 		if(time_on==0x01)
 		{
-			//MC_MoveAbsoluteTest(Holding_Registers_Database[0],Holding_Registers_Database[1],Holding_Registers_Database[2], 10000);
-			if((Coils_Database[1] & (1<<7)) !=0x00U)
-			{
-				MC_MoveLinear(Holding_Registers_Database[0],Holding_Registers_Database[1],Holding_Registers_Database[2],10000);
-			}
+			Task_scan_HMI();
 		}
 
     /* USER CODE END WHILE */

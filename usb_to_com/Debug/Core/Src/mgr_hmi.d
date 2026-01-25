@@ -1,4 +1,5 @@
-modbus/tim_base.o: ../modbus/tim_base.c ../modbus/tim_base.h \
+Core/Src/mgr_hmi.o: ../Core/Src/mgr_hmi.c \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/motor.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -30,10 +31,13 @@ modbus/tim_base.o: ../modbus/tim_base.c ../modbus/tim_base.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h \
- ../modbus/motor.h ../Core/Inc/main.h ../modbus/RS232.h \
- ../modbus/modbusSlave.h ../modbus/modbus_crc.h ../modbus/delay.h \
- ../modbus/Common.h
-../modbus/tim_base.h:
+ ../Core/Inc/main.h D:/PhamVanHung/STM32/usb_to_com/modbus/RS232.h \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/modbusSlave.h \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/modbus_crc.h \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/delay.h \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/Common.h ../Core/Inc/mgr_hmi.h \
+ ../Core/Inc/drive.h ../Core/Inc/main.h
+D:/PhamVanHung/STM32/usb_to_com/modbus/motor.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
@@ -65,10 +69,12 @@ modbus/tim_base.o: ../modbus/tim_base.c ../modbus/tim_base.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h:
-../modbus/motor.h:
 ../Core/Inc/main.h:
-../modbus/RS232.h:
-../modbus/modbusSlave.h:
-../modbus/modbus_crc.h:
-../modbus/delay.h:
-../modbus/Common.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/RS232.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/modbusSlave.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/modbus_crc.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/delay.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/Common.h:
+../Core/Inc/mgr_hmi.h:
+../Core/Inc/drive.h:
+../Core/Inc/main.h:
