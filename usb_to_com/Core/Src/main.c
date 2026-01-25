@@ -136,16 +136,9 @@ int main(void)
 		if(time_on==0x01)
 		{
 			//MC_MoveAbsoluteTest(Holding_Registers_Database[0],Holding_Registers_Database[1],Holding_Registers_Database[2], 10000);
+			MC_MoveLinear(Holding_Registers_Database[0],Holding_Registers_Database[1],Holding_Registers_Database[2],10000);
 		}
-		time_on=Delay_GetTimer(TID_TIMER_1000ms);
-		if(time_on==0x01)
-		{
-			if((Coils_Database[1] & (1<<7)) !=0x00U)
-			{
-				MC_MoveLinear(Holding_Registers_Database[0],Holding_Registers_Database[1],Holding_Registers_Database[2],10000);
-			}
-			//MC_MoveAbsoluteTest(Holding_Registers_Database[0],Holding_Registers_Database[1],Holding_Registers_Database[2], 10000);
-		}
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
