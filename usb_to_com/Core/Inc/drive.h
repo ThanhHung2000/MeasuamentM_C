@@ -10,6 +10,7 @@
 #include "main.h"
 #define  SET_FREQ_1KHZ                   999U
 #define  SET_SPEED_1000HZ                1000U  // 1
+#define  SET_SPEED_500HZ                 499U  // 1
 #define  TIME_RAMPING                    101U
 #define  MAX_Axis_OX					55000U
 #define  MAX_Axis_OX					55000U
@@ -44,7 +45,7 @@ typedef struct {
     TIM_HandleTypeDef* htim_counter;
     uint32_t channel;
     uint32_t channel_counter;
-    void (* Set_Direction_Pin)(uint8_t);
+    uint8_t (* Set_Direction_Pin)(uint8_t);
     // Thông số chuyển động
     int32_t current_pos;   // Vị trí hiện tại (số xung)
     volatile int32_t target_pos;    // Vị trí đích
@@ -65,6 +66,7 @@ typedef struct {
 	uint8_t active;  // Bằng 1 khi trục đang có quyền điều khiển hardware
 	uint8_t indexaxis;
 	int32_t max_axis;
+	volatile uint8_t homing;
 
 } MC_Axis_t;
 
@@ -76,6 +78,11 @@ void MC_MoveAbsoluteTest(uint32_t posx,uint32_t posy,uint32_t posz, uint32_t fre
 void MC_MoveHandle(uint8_t axis,uint8_t status, int dir);
 uint8_t Move_Home_3Step(volatile uint8_t * home_tep);
 void Reset_position(void);
+void Interrup_gpio(uint16_t GPIO_Pin);
+void Interrup_gpio_OX(void);
+void Interrup_gpio_OY(void);
+void Interrup_gpio_OZ(void);
+uint8_t Motor_Busy(void);
 //uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz,float freq_max );
 
 //void MC_MoveHandle(uint8_t axis,uint8_t status, int dir);

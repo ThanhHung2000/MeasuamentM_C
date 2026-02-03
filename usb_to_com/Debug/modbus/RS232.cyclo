@@ -1,3 +1,3 @@
-../modbus/RS232.c:35:6:HMI_Init	1
-../modbus/RS232.c:40:9:DecodeModbusRtu	3
-../modbus/RS232.c:55:6:HAL_UARTEx_RxEventCallback	11
+../modbus/RS232.c:38:6:HMI_Init	1
+../modbus/RS232.c:43:9:DecodeModbusRtu	3
+../modbus/RS232.c:58:6:HAL_UARTEx_RxEventCallback	11

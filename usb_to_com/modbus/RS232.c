@@ -18,6 +18,9 @@ Save_Tray_t* Save_Tray = (Save_Tray_t*)&Coils_Database[3];
 Save_Tray_t* Save_Tray_Indicator = (Save_Tray_t*)&Coils_Database[3];
 Motor_Lamp_t* Motor_Lamp = (Motor_Lamp_t*)&Inputs_Database[1];
 Worker_Control_t* Worker_Control = (Worker_Control_t*)&Coils_Database[2];
+Home_controller * Home_controller_hmi = (Home_controller *)&Coils_Database[5];
+
+Tray2D * Point2D_Tray1 = (Tray2D *)&Holding_Registers_Database[12];
 
 uint16_t* Cover_Select = &Holding_Registers_Database[16];
 uint16_t* Lamp_Cover_select = &Input_Registers_Database[1];

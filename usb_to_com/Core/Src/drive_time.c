@@ -7,6 +7,7 @@
 #include"drive_time.h"
 #include "drive.h"
 #include"dvr_gpio.h"
+#include "mgr_hmi.h"
 Msg_Timer_Delay TID_Timer[TOTAL_TIMER_DELAY];
 static volatile uint32_t _tGloabal_milis=0;
 
@@ -19,7 +20,6 @@ uint32_t millis(void)
 void TIM7_Interrupt(void)
 {
 	++_tGloabal_milis;
-	Task_Gpio_input();
 	MC_Control_Interrupt();
 	if(_tGloabal_milis>=0x7FFFFFFFU)
 	{

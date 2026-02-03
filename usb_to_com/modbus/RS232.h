@@ -23,7 +23,18 @@ typedef enum {
 	WorkerRunning,
 
 } MachineState;
-
+typedef struct {
+	uint16_t x1;
+	uint16_t y1;
+	uint16_t x2;
+	uint16_t y2;
+	uint16_t x3;
+	uint16_t y3;
+} Tray2D;
+typedef struct {
+	uint16_t x;
+	uint16_t y;
+} Point2D;
 typedef union {
     struct {
 
@@ -55,13 +66,17 @@ typedef union {
 }Save_Tray_t;
 typedef union {
     struct {
-    	uint8_t Main :1;
+    	uint8_t Home :1;
     	uint8_t Motor :1;
         uint8_t reserved : 6;
 
     } bits;
     uint8_t all;
 } Tab_Control_t;
+
+
+
+
 typedef union {
     struct {
     	uint16_t ruber1_1 		:1;
@@ -79,6 +94,22 @@ typedef union {
     } bits;
     uint16_t all;
 } Motor_Lamp_t;
+
+typedef union
+{
+    struct {
+    	uint8_t reset 		:1;
+    	uint8_t start 		:1;
+    	uint8_t stop	    :1;
+    	uint8_t setX		:1;
+    	uint8_t setY		:1;
+    	uint8_t setZ    	:1;
+    	uint8_t Manual_auto :1;
+    	uint8_t ignor		:1;
+    } bits;
+    uint8_t all;
+}Home_controller;
+
 typedef union {
     struct {
     	uint8_t glass1 		:1;
@@ -106,9 +137,11 @@ extern Worker_Control_t* Worker_Control;
 extern Motor_Lamp_t* Motor_Lamp;
 extern Control_motor_t* Control_motor;
 extern Tab_Control_t* Tab;
+extern Home_controller * Home_controller_hmi;
 extern Save_Tray_t* Save_Tray;
 extern Save_Tray_t* Save_Tray_Indicator;
 extern uint16_t* Mark;
+extern Tray2D * Point2D_Tray1;
 void HMI_Init(void);
 
 //void uart2_receive_IDLE_DMA();

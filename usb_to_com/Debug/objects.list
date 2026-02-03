@@ -1,6 +1,7 @@
 "./Core/Src/drive.o"
 "./Core/Src/drive_time.o"
 "./Core/Src/drv_gpio.o"
+"./Core/Src/flash_data.o"
 "./Core/Src/main.o"
 "./Core/Src/mgr_hmi.o"
 "./Core/Src/stm32f4xx_hal_msp.o"

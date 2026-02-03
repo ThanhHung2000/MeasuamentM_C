@@ -3,10 +3,11 @@
 volatile static Input_state_Sesor   sensor;
 uint8_t Gpio_read_input(void)
 {
+	uint32_t idr =GPIOC->IDR;
 	uint8_t input=0x00U;
-	input |=(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13)<<0);
-	input |=(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_14)<<1);
-	input |=(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_15)<<2);
+	if(idr & GPIO_PIN_0) input |= (1<<0);
+	if(idr & GPIO_PIN_1) input |= (1<<1);
+	if(idr & GPIO_PIN_2) input |= (1<<2);
 	return input;
 }
 
@@ -17,7 +18,7 @@ void Task_Gpio_input()
 	input_sensor_current=Gpio_read_input();
     for (int i = 0; i < NUM_SENSORS; i++)
     {
-    	input_read=(input_sensor_current &(1<<i))==0x00U ? 0x01U :0x00U;
+    	input_read=(input_sensor_current &(1<<i)) ? 0x01U :0x00U;
         // 2. So sánh với lần đọc trước
         if (input_read == sensor.Last_Sensor_Reading[i])
         {
@@ -46,3 +47,4 @@ uint8_t Get_State_Sensor(uint8_t channel)
 {
 	return sensor.Sensor_State[channel];
 }
+

@@ -22,6 +22,12 @@ uint16_t Get_Holding_Registers(uint8_t index)
 	if(index>50) return 0x00U;
 	return Holding_Registers_Database[index];
 }
+void Reset_Oxis(void)
+{
+	Holding_Registers_Database[0]=0x00U;
+	Holding_Registers_Database[1]=0x00U;
+	Holding_Registers_Database[2]=0x00U;
+}
 void Copy_Holding_Registers(uint8_t index,uint8_t index_coppy)
 {
 	Holding_Registers_Database[index_coppy]=Holding_Registers_Database[index];
