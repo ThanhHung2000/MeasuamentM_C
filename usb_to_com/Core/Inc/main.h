@@ -106,8 +106,6 @@ void Error_Handler(void);
 #define I16_DU_PHONG4_GPIO_Port GPIOE
 #define I17_DU_PHONG5_Pin GPIO_PIN_15
 #define I17_DU_PHONG5_GPIO_Port GPIOE
-#define I18_DU_PHONG6_Pin GPIO_PIN_10
-#define I18_DU_PHONG6_GPIO_Port GPIOB
 #define DIR_TIM3_Pin GPIO_PIN_7
 #define DIR_TIM3_GPIO_Port GPIOC
 #define DIR_TIM8_Pin GPIO_PIN_9

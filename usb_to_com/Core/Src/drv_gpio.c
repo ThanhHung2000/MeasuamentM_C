@@ -61,8 +61,8 @@ uint32_t Gpio_read_input(void)
 	idr =GPIOB->IDR;
 	if(idr & GPIO_PIN_0) input |= (1<<6);
 	if(idr & GPIO_PIN_1) input |= (1<<7);
-	if(idr & GPIO_PIN_10) input |= (1<<17);
-	idr =GPIOB->IDR;
+	if(idr & GPIO_PIN_12) input |= (1<<17);
+	idr =GPIOE->IDR;
 	if(idr & GPIO_PIN_7) input |= (1<<8);
 	if(idr & GPIO_PIN_8) input |= (1<<9);
 	if(idr & GPIO_PIN_9) input |= (1<<10);
@@ -77,12 +77,12 @@ uint32_t Gpio_read_input(void)
 
 void Gpio_input()
 {
-	uint8_t input_sensor_current;
+	uint32_t input_sensor_current;
 	uint8_t input_read;
 	input_sensor_current=Gpio_read_input();
     for (int i = 0; i < NUM_SENSORS; i++)
     {
-    	input_read=(input_sensor_current &(1<<i)) ? 0x01U :0x00U;
+    	input_read=(input_sensor_current &(1<<i)) ? 0x00U :0x01U;
         // 2. So sánh với lần đọc trước
         if (input_read == sensor.Last_Sensor_Reading[i])
         {
@@ -130,7 +130,7 @@ void Task_gpio_output(void)// copy dữ liệu sang địa chỉ 10000
 	uint8_t state=0x00U;
 	for (int i = 0; i < NUM_SENSORS; i++)
 	{
-		state =(gpio_output&(1UL<<i)) ? 0x01U:0x00U;
+		state =(gpio_output&(1UL<<i)) ? 0x00U:0x01U;
 		if (Gpio_output[i].handler != NULL)
 		{
 			Gpio_output[i].handler(state);

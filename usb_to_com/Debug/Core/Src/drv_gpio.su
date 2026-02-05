@@ -1,5 +1,5 @@
 ../Core/Src/drv_gpio.c:51:10:Gpio_read_input	16	static
-../Core/Src/drv_gpio.c:78:6:Gpio_input	16	static
+../Core/Src/drv_gpio.c:78:6:Gpio_input	24	static
 ../Core/Src/drv_gpio.c:110:6:Task_gpio_input	16	static
 ../Core/Src/drv_gpio.c:125:6:Task_gpio_output	24	static
 ../Core/Src/drv_gpio.c:140:9:Get_State_Sensor	16	static

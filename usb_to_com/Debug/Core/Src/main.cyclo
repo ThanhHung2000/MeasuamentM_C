@@ -10,5 +10,5 @@
 ../Core/Src/main.c:650:13:MX_USART2_UART_Init	2
 ../Core/Src/main.c:681:13:MX_DMA_Init	1
 ../Core/Src/main.c:699:13:MX_GPIO_Init	1
-../Core/Src/main.c:829:6:HAL_GPIO_EXTI_Callback	1
-../Core/Src/main.c:839:6:Error_Handler	1
+../Core/Src/main.c:832:6:HAL_GPIO_EXTI_Callback	1
+../Core/Src/main.c:842:6:Error_Handler	1

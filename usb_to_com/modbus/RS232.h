@@ -49,11 +49,6 @@ typedef union {
     uint8_t all;
 } Control_motor_t;
 
-typedef struct {
-    float target_position;    // Tọa độ mục tiêu (ví dụ: mm hoặc độ)
-    float target_speed;       // Tốc độ mục tiêu (ví dụ: mm/s)
-    float max_limit;          // Giới hạn phần mềm tối đa (Soft Limit Max)
-} Axis_Config_t;
 
 typedef union {
     struct {

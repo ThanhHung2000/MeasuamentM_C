@@ -15,11 +15,14 @@
 #include"dvr_gpio.h"
 #include <math.h>
 #include "flash_data.h"
+
+
+
 int8_t fisrtbit=0x00U;
 uint8_t Emergency = 0;
 uint8_t Glass_group = 0;
 uint8_t save=0x00U;
-volatile uint8_t home=0x01U;
+volatile uint8_t home=0x00U;
 uint8_t start_run=0x00U;
 uint8_t stop_run=0x00U;
 static uint8_t state=0x00U;
@@ -190,7 +193,7 @@ uint8_t Task_Scan_Tray(uint16_t* time)
 			Point2D pos = Get_Target_Zigzag(i, j);
 			 pulseX = (int32_t)(pos.x );
 			 pulseY = (int32_t)(pos.y );
-			MC_MoveLinear(pulseX,pulseY, 0x00u, 20000U);// di chuyển sang điểm mới
+			MC_MoveLinear(pulseX,pulseY, 0x00u);// di chuyển sang điểm mới
 			state=0x01U;
 		}
 
@@ -204,7 +207,7 @@ uint8_t Task_Scan_Tray(uint16_t* time)
 			{
 				*time =0x00U;
 				state=0x00u;
-				MC_MoveLinear(pulseX,pulseY, 0x00u, 30000U);// di chuyển trục Z lên
+				//MC_MoveLinear(pulseX,pulseY, 0x00u, 30000U);// di chuyển trục Z lên
 				j++;
 				if(j>=13U)
 				{
@@ -220,7 +223,7 @@ uint8_t Task_Scan_Tray(uint16_t* time)
 			}
 			else if(*time==0x01U)
 			{
-				MC_MoveLinear(pulseX,pulseY, 7000u, 30000U);// di chuyển Z xuống
+				//MC_MoveLinear(pulseX,pulseY, 7000u, 30000U);// di chuyển Z xuống
 			}
 		}
 	}
@@ -241,7 +244,7 @@ void Scanning_Task(void)
 			// di chuyển đến điểm chứa bàn cờ hiệu chỉnh, ví dụ tray rubber, di chuyển đến trung tâm của tray rubber
 			if(sample_x != 0x00U && sample_y != 0x00U )
 			{
-				MC_MoveLinear(sample_x,sample_y,0x00U,20000u);
+				//MC_MoveLinear(sample_x,sample_y,0x00U,20000u);
 			}
 			else
 			{
@@ -259,13 +262,13 @@ void Scanning_Task(void)
 					dY = sqrtf(powf((float)Point2D_Tray1->x3 - (float)Point2D_Tray1->x1, 2) + powf((float)Point2D_Tray1->y3 - (float)Point2D_Tray1->y1, 2)) / 12.0f;
 					// Tính góc nghiêng của khay so với trục X của Robot
 					Angle = atan2f((float)Point2D_Tray1->y2 - (float)Point2D_Tray1->y1, (float)Point2D_Tray1->x2 - (float)Point2D_Tray1->x1);
-					MC_MoveLinear(sample_x,sample_y,0x00U,30000U);
+					//MC_MoveLinear(sample_x,sample_y,0x00U,30000U);
 					time =0x00U;
 					step_run=0x01U;
 				}
 				else if(time==0x01U)
 				{
-					MC_MoveLinear(sample_x,sample_y,7000U,30000U);
+					//MC_MoveLinear(sample_x,sample_y,7000U,30000U);
 				}
 			}
 		}
@@ -274,7 +277,7 @@ void Scanning_Task(void)
 		{
 			if(Task_Scan_Tray(&time))
 			{
-				MC_MoveLinear(sample_x,sample_y,0x00U,10000u);
+				//MC_MoveLinear(sample_x,sample_y,0x00U,10000u);
 				step_run=0x01U;
 				start_run=0x00U;
 				time=0x00U;
@@ -339,7 +342,9 @@ void Handle_Down(uint8_t data)
 
 void Handle_Set(void)
 {
-	MC_MoveLinear(Holding_Registers_Database[0],Holding_Registers_Database[1],Holding_Registers_Database[2],20000U);
+	// lấy dữ liệu từ 4x Holding_Registers_Database để làm target
+	Copy_target_fromPC();
+	MC_MoveLinear(Rotbot_axis_target[0].target_position,Rotbot_axis_target[1].target_position,Rotbot_axis_target[2].target_position);
 
 }
 void Handle_Home(void)

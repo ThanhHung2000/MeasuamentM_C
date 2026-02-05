@@ -65,24 +65,31 @@ typedef struct {
 	uint8_t error;   // Bằng 1 khi trục gặp sự cố
 	uint8_t active;  // Bằng 1 khi trục đang có quyền điều khiển hardware
 	uint8_t indexaxis;
-	int32_t max_axis;
+	int32_t *max_axis;
 	volatile uint8_t homing;
 
 } MC_Axis_t;
+typedef struct {
+    float target_position;    // Tọa độ mục tiêu (ví dụ: mm hoặc độ)
+    float target_speed;       // Tốc độ mục tiêu (ví dụ: mm/s)
+    int32_t max_limit;          // Giới hạn phần mềm tối đa (Soft Limit Max)
+} Axis_Config_t;
 
 void Init_Timer_chanal(void);
 void Robot_Init(void);
 void  MC_Control_Interrupt(void);
-uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz,float freq_max );// thời điểm kết thúc gần bằng nhau tuyệt đối
+uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz );// thời điểm kết thúc gần bằng nhau tuyệt đối
 void MC_MoveAbsoluteTest(uint32_t posx,uint32_t posy,uint32_t posz, uint32_t freq);
 void MC_MoveHandle(uint8_t axis,uint8_t status, int dir);
 uint8_t Move_Home_3Step(volatile uint8_t * home_tep);
 void Reset_position(void);
+void Copy_target_fromPC(void);
 void Interrup_gpio(uint16_t GPIO_Pin);
 void Interrup_gpio_OX(void);
 void Interrup_gpio_OY(void);
 void Interrup_gpio_OZ(void);
 uint8_t Motor_Busy(void);
+extern Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT];
 //uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz,float freq_max );
 
 //void MC_MoveHandle(uint8_t axis,uint8_t status, int dir);

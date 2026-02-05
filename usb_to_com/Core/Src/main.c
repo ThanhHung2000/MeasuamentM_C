@@ -124,12 +124,12 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   Init_Timer_chanal();
-  HAL_Delay(5000);// đồng bộ với Hdmi
   Robot_Init();
   Delay_SetTimer(TID_TIMER_1ms,1);
   Delay_SetTimer(TID_TIMER_1000ms,5000);
   HMI_Init();
   HAL_TIM_Base_Start_IT(&htim7);
+ // HAL_Delay(5000);// đồng bộ với Hdmi
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -325,7 +325,7 @@ static void MX_TIM2_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 999;
+  sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
@@ -450,7 +450,7 @@ static void MX_TIM4_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 999;
+  sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
@@ -509,7 +509,7 @@ static void MX_TIM5_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 999;
+  sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim5, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
@@ -712,35 +712,38 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, O13_Duphong4_Pin|O14_Duphong5_Pin|O15_Duphong6_Pin|O16_Duphong7_Pin
-                          |O17_Duphong8_Pin|O11_Duphong2_Pin|O12_Duphong3_Pin, GPIO_PIN_RESET);
+                          |O17_Duphong8_Pin|O11_Duphong2_Pin|O12_Duphong3_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, O18_Duphong9_Pin|DIR_TIM3_Pin|DIR_TIM8_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(O18_Duphong9_GPIO_Port, O18_Duphong9_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, DIR_TIM3_Pin|DIR_TIM8_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, DIR_TIM1_Pin|DIR_NO_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, O1_xilanh1_Pin|O2_xilanh2_Pin|O3_vacum_hut1_Pin|O4_vacum_hut2_Pin
-                          |O5_vacum1_nha_Pin, GPIO_PIN_RESET);
+                          |O5_vacum1_nha_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, O6_vacum2_nha_Pin|O7_Den_Xanh_Pin|O8_Den_Do_Pin|O9_Coi_Pin
-                          |O10_Duphong1_Pin, GPIO_PIN_RESET);
+                          |O10_Duphong1_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pins : O13_Duphong4_Pin O14_Duphong5_Pin O15_Duphong6_Pin O16_Duphong7_Pin
                            O17_Duphong8_Pin O11_Duphong2_Pin O12_Duphong3_Pin */
   GPIO_InitStruct.Pin = O13_Duphong4_Pin|O14_Duphong5_Pin|O15_Duphong6_Pin|O16_Duphong7_Pin
                           |O17_Duphong8_Pin|O11_Duphong2_Pin|O12_Duphong3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pin : O18_Duphong9_Pin */
   GPIO_InitStruct.Pin = O18_Duphong9_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(O18_Duphong9_GPIO_Port, &GPIO_InitStruct);
 
@@ -756,8 +759,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : I7_RESTART_Pin I8_VACUM1_Pin I18_DU_PHONG6_Pin */
-  GPIO_InitStruct.Pin = I7_RESTART_Pin|I8_VACUM1_Pin|I18_DU_PHONG6_Pin;
+  /*Configure GPIO pins : I7_RESTART_Pin I8_VACUM1_Pin PB12 */
+  GPIO_InitStruct.Pin = I7_RESTART_Pin|I8_VACUM1_Pin|GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -798,7 +801,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = O1_xilanh1_Pin|O2_xilanh2_Pin|O3_vacum_hut1_Pin|O4_vacum_hut2_Pin
                           |O5_vacum1_nha_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
@@ -807,7 +810,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = O6_vacum2_nha_Pin|O7_Den_Xanh_Pin|O8_Den_Do_Pin|O9_Coi_Pin
                           |O10_Duphong1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
