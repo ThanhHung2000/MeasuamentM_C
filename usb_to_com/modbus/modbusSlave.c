@@ -14,9 +14,15 @@ extern UART_HandleTypeDef huart2;
 
 uint16_t Holding_Registers_Database[50]={0,};
 uint8_t Coils_Database[50]={0,};
-uint8_t Inputs_Database[50]={ 0,};
+uint8_t Inputs_Database[50]  = {0,};
 uint16_t Input_Registers_Database[50]={0,};
 
+void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint16_t state )
+{
+	Input_Registers_Database[index]=toa_do;
+	Input_Registers_Database[index + 1]=toc_do;
+	Input_Registers_Database[index + 2]=state;
+}
 uint16_t Get_Holding_Registers(uint8_t index)
 {
 	if(index>50) return 0x00U;

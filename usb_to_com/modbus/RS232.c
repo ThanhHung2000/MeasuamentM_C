@@ -11,29 +11,12 @@
 uint8_t RxData[RX_BUF_SIZE];
 uint8_t TxData[RX_BUF_SIZE];
 
-
+Tab_Control_t* Main_controler = (Tab_Control_t*)&Coils_Database[0];
 Control_motor_t* Control_motor = (Control_motor_t*)&Coils_Database[1];
-Tab_Control_t* Tab = (Tab_Control_t*)&Coils_Database[0];
-Save_Tray_t* Save_Tray = (Save_Tray_t*)&Coils_Database[3];
-Save_Tray_t* Save_Tray_Indicator = (Save_Tray_t*)&Coils_Database[3];
-Motor_Lamp_t* Motor_Lamp = (Motor_Lamp_t*)&Inputs_Database[1];
-Worker_Control_t* Worker_Control = (Worker_Control_t*)&Coils_Database[2];
-Home_controller * Home_controller_hmi = (Home_controller *)&Coils_Database[5];
-
 Tray2D * Point2D_Tray1 = (Tray2D *)&Holding_Registers_Database[12];
 
-uint16_t* Cover_Select = &Holding_Registers_Database[16];
-uint16_t* Lamp_Cover_select = &Input_Registers_Database[1];
-uint8_t* Lamp_Cover_done = &Inputs_Database[26];
+Axis_Config_t *Axis_Config = (Axis_Config_t *)&Holding_Registers_Database[0];
 
-
-uint16_t* Glass_Select = &Holding_Registers_Database[15];
-uint16_t* Lamp_glass_select = &Input_Registers_Database[0];
-uint8_t* Lamp_glass_empty = &Inputs_Database[1];
-
-uint16_t* Mark = &Holding_Registers_Database[3];
-uint16_t Glass_Index = 0;
-uint8_t end_Cover = 25;
 
 void HMI_Init(void)
 {

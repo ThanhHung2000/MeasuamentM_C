@@ -64,7 +64,6 @@ void Reset_position(void)
 		Rotbot_axis[i].ramp_time=0x00U;
 		Rotbot_axis[i].counter_pos=0x00U;
 		Rotbot_axis[i].direction=0x00U;
-		Rotbot_axis[i].indexaxis=i;
 		Rotbot_axis[i].fulse_stop=0x00U;
 		Rotbot_axis[i].offset=0x00U;
 	}
@@ -78,6 +77,7 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_X_ROBOT].channel_counter=TIM_CHANNEL_2;
 	Rotbot_axis[AXIT_X_ROBOT].Set_Direction_Pin=Set_Direction_OX;
 	Rotbot_axis[AXIT_X_ROBOT].max_axis=55000U;
+	Rotbot_axis[AXIT_X_ROBOT].indexaxis=0x00U;
 	// TRỤC Y
 	Rotbot_axis[AXIT_Y_ROBOT].htim= &htim3;
 	Rotbot_axis[AXIT_Y_ROBOT].htim_counter= &htim5;
@@ -85,6 +85,7 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_Y_ROBOT].channel_counter=TIM_CHANNEL_1;
 	Rotbot_axis[AXIT_Y_ROBOT].Set_Direction_Pin=Set_Direction_OY;
 	Rotbot_axis[AXIT_Y_ROBOT].max_axis=28000U;
+	Rotbot_axis[AXIT_Y_ROBOT].indexaxis=0x03U;
 	// TRỤC Z
 	Rotbot_axis[AXIT_Z_ROBOT].htim= &htim8;
 	Rotbot_axis[AXIT_Z_ROBOT].htim_counter= &htim4;
@@ -92,6 +93,7 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_Z_ROBOT].channel_counter=TIM_CHANNEL_1;
 	Rotbot_axis[AXIT_Z_ROBOT].Set_Direction_Pin=Set_Direction_OZ;
 	Rotbot_axis[AXIT_Z_ROBOT].max_axis=13000U;
+	Rotbot_axis[AXIT_Z_ROBOT].indexaxis=0x06U;
 	Reset_position();
 }
 // MC_Axis_t quản lý thông số của truc x,y, cụ thể
@@ -417,26 +419,26 @@ void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 	{
 		case STATUS_JOGGING_OXIS:// jogging
 		{
-			MC_MoveAbsolute(&Rotbot_axis[axis],dir*Rotbot_axis[axis].max_axis,5000U);
+			MC_MoveAbsolute(&Rotbot_axis[axis],dir*Rotbot_axis[axis].max_axis,3000U);
 		}
 		break;
 		case STATUS_STEP_OXIS:// step
 		{
 			if(dir==0x00U)
 			{
-				int32_t value = (Rotbot_axis[axis].current_pos > 100U) ? Rotbot_axis[axis].current_pos - 100U : 0x00U;
+				int32_t value = (Rotbot_axis[axis].current_pos > 10U) ? Rotbot_axis[axis].current_pos - 10U : 0x00U;
 
 				MC_MoveAbsolute(&Rotbot_axis[axis],value,5000U);
 			}
 			else
 			{
-				MC_MoveAbsolute(&Rotbot_axis[axis],Rotbot_axis[axis].current_pos + 100,5000U);
+				MC_MoveAbsolute(&Rotbot_axis[axis],Rotbot_axis[axis].current_pos + 10U,5000U);
 			}
 		}
 		break;
 		case STATUS_STOP_OXIS:// stop
 		{
-			MC_Stop(&Rotbot_axis[axis]);
+			MC_MoveHomeAbsolute(&Rotbot_axis[axis]);
 		}
 		break;
 
@@ -536,9 +538,8 @@ void Rotbot_controler(MC_Axis_t* axis)
         	axis->current_pos -= (curent_counter-axis->counter_pos);
         	axis->current_pos -=axis->offset;
         }
-
         axis->offset=0x00U;
-        Holding_Registers_Database[axis->indexaxis]=axis->current_pos;
+        Update_Input_Register(axis->indexaxis,axis->current_pos,axis->current_speed,(uint16_t)axis->state);
         axis->counter_pos = curent_counter;
         if(axis->done == 0x01U)
         {

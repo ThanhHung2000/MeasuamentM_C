@@ -28,6 +28,7 @@
 #include "RS232.h"
 #include "mgr_hmi.h"
 #include "flash_data.h"
+#include"dvr_gpio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -124,7 +125,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
   Init_Timer_chanal();
   HAL_Delay(5000);// đồng bộ với Hdmi
-  Load_Calibration_From_Flash(0x06U);
   Robot_Init();
   Delay_SetTimer(TID_TIMER_1ms,1);
   Delay_SetTimer(TID_TIMER_1000ms,5000);
@@ -136,10 +136,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  	 // bổ sung watdog sau khi chạy ok
 		time_on=Delay_GetTimer(TID_TIMER_1ms);
 		if(time_on==0x01)
 		{
 			Task_Run_HMI();
+			Task_gpio_output();
+			Task_gpio_input();
 		}
 		Task_Run_Home();
     /* USER CODE END WHILE */
@@ -701,28 +704,45 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5
-                          |GPIO_PIN_6|GPIO_PIN_0|GPIO_PIN_1, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, O13_Duphong4_Pin|O14_Duphong5_Pin|O15_Duphong6_Pin|O16_Duphong7_Pin
+                          |O17_Duphong8_Pin|O11_Duphong2_Pin|O12_Duphong3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, DIR_TIM3_Pin|DIR_TIM8_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, O18_Duphong9_Pin|DIR_TIM3_Pin|DIR_TIM8_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, DIR_TIM1_Pin|DIR_NO_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PE2 PE3 PE4 PE5
-                           PE6 PE0 PE1 */
-  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5
-                          |GPIO_PIN_6|GPIO_PIN_0|GPIO_PIN_1;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, O1_xilanh1_Pin|O2_xilanh2_Pin|O3_vacum_hut1_Pin|O4_vacum_hut2_Pin
+                          |O5_vacum1_nha_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, O6_vacum2_nha_Pin|O7_Den_Xanh_Pin|O8_Den_Do_Pin|O9_Coi_Pin
+                          |O10_Duphong1_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : O13_Duphong4_Pin O14_Duphong5_Pin O15_Duphong6_Pin O16_Duphong7_Pin
+                           O17_Duphong8_Pin O11_Duphong2_Pin O12_Duphong3_Pin */
+  GPIO_InitStruct.Pin = O13_Duphong4_Pin|O14_Duphong5_Pin|O15_Duphong6_Pin|O16_Duphong7_Pin
+                          |O17_Duphong8_Pin|O11_Duphong2_Pin|O12_Duphong3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : O18_Duphong9_Pin */
+  GPIO_InitStruct.Pin = O18_Duphong9_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(O18_Duphong9_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PC0 PC1 PC2 */
   GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2;
@@ -730,10 +750,24 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PE7 PE8 PE9 PE10
-                           PE11 PE12 */
-  GPIO_InitStruct.Pin = GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10
-                          |GPIO_PIN_11|GPIO_PIN_12;
+  /*Configure GPIO pins : I4_E_stop_Pin I5_STOP_Pin I6_START_Pin */
+  GPIO_InitStruct.Pin = I4_E_stop_Pin|I5_STOP_Pin|I6_START_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : I7_RESTART_Pin I8_VACUM1_Pin I18_DU_PHONG6_Pin */
+  GPIO_InitStruct.Pin = I7_RESTART_Pin|I8_VACUM1_Pin|I18_DU_PHONG6_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : I9_VACUM2_Pin I_10Left_DOOR_Pin I_11_RIGHT_DOOR_Pin I12_AP_SUAT_Pin
+                           I13_DU_PHONG_Pin I14_DU_PHONG2_Pin I15_DU_PHONG3_Pin I16_DU_PHONG4_Pin
+                           I17_DU_PHONG5_Pin */
+  GPIO_InitStruct.Pin = I9_VACUM2_Pin|I_10Left_DOOR_Pin|I_11_RIGHT_DOOR_Pin|I12_AP_SUAT_Pin
+                          |I13_DU_PHONG_Pin|I14_DU_PHONG2_Pin|I15_DU_PHONG3_Pin|I16_DU_PHONG4_Pin
+                          |I17_DU_PHONG5_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
@@ -759,6 +793,24 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(DIR_NO_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : O1_xilanh1_Pin O2_xilanh2_Pin O3_vacum_hut1_Pin O4_vacum_hut2_Pin
+                           O5_vacum1_nha_Pin */
+  GPIO_InitStruct.Pin = O1_xilanh1_Pin|O2_xilanh2_Pin|O3_vacum_hut1_Pin|O4_vacum_hut2_Pin
+                          |O5_vacum1_nha_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : O6_vacum2_nha_Pin O7_Den_Xanh_Pin O8_Den_Do_Pin O9_Coi_Pin
+                           O10_Duphong1_Pin */
+  GPIO_InitStruct.Pin = O6_vacum2_nha_Pin|O7_Den_Xanh_Pin|O8_Den_Do_Pin|O9_Coi_Pin
+                          |O10_Duphong1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
@@ -776,7 +828,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	//Interrup_gpio(GPIO_Pin);
+
 }
 /* USER CODE END 4 */
 

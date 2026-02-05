@@ -53,7 +53,6 @@ void Load_Calibration_From_Flash(uint16_t index)
 			data_array[i] = flash_ptr[i];
 			if(i%2==0)
 			{
-				Motor_Lamp->all |= (1<<j);
 				j++;
 			}
 		}

@@ -1,5 +1,5 @@
 Core/Src/mgr_hmi.o: ../Core/Src/mgr_hmi.c \
- D:/STM32/usb_to_com/modbus/RS232.h \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/RS232.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -31,13 +31,14 @@ Core/Src/mgr_hmi.o: ../Core/Src/mgr_hmi.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h \
- D:/STM32/usb_to_com/modbus/modbusSlave.h \
- D:/STM32/usb_to_com/modbus/modbus_crc.h ../Core/Inc/main.h \
- D:/STM32/usb_to_com/modbus/delay.h D:/STM32/usb_to_com/modbus/Common.h \
- ../Core/Inc/mgr_hmi.h ../Core/Inc/drive.h ../Core/Inc/main.h \
- D:/STM32/usb_to_com/modbus/modbusSlave.h ../Core/Inc/dvr_gpio.h \
- ../Core/Inc/flash_data.h
-D:/STM32/usb_to_com/modbus/RS232.h:
+ D:/PhamVanHung/STM32/usb_to_com/modbus/modbusSlave.h \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/modbus_crc.h ../Core/Inc/main.h \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/delay.h \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/Common.h ../Core/Inc/mgr_hmi.h \
+ ../Core/Inc/drive.h ../Core/Inc/main.h \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/modbusSlave.h \
+ ../Core/Inc/dvr_gpio.h ../Core/Inc/flash_data.h
+D:/PhamVanHung/STM32/usb_to_com/modbus/RS232.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
@@ -69,14 +70,14 @@ D:/STM32/usb_to_com/modbus/RS232.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h:
-D:/STM32/usb_to_com/modbus/modbusSlave.h:
-D:/STM32/usb_to_com/modbus/modbus_crc.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/modbusSlave.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/modbus_crc.h:
 ../Core/Inc/main.h:
-D:/STM32/usb_to_com/modbus/delay.h:
-D:/STM32/usb_to_com/modbus/Common.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/delay.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/Common.h:
 ../Core/Inc/mgr_hmi.h:
 ../Core/Inc/drive.h:
 ../Core/Inc/main.h:
-D:/STM32/usb_to_com/modbus/modbusSlave.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/modbusSlave.h:
 ../Core/Inc/dvr_gpio.h:
 ../Core/Inc/flash_data.h:

@@ -10,7 +10,7 @@
 
 #include "main.h"
 #define NUMBER_GPIO_SAMPLING 0x05U
-#define NUM_SENSORS        0x03U
+#define NUM_SENSORS        18U
 
 typedef struct
 {
@@ -19,5 +19,7 @@ typedef struct
 	volatile uint8_t Sample_Counter[NUM_SENSORS] ;	// Mảng chứa bộ đếm chống nhiễu cho từng cảm biến
 }Input_state_Sesor;
 uint8_t Get_State_Sensor(uint8_t channel);
-void Task_Gpio_input();
+void Gpio_input();
+void Task_gpio_input();
+void Task_gpio_output(void);
 #endif /* INC_DVR_GPIO_H_ */

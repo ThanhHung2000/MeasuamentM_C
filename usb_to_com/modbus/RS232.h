@@ -37,109 +37,38 @@ typedef struct {
 } Point2D;
 typedef union {
     struct {
-
-        uint8_t Left	: 1;
-        uint8_t Right	: 1;
-        uint8_t In		: 1;
-        uint8_t Out		: 1;
-        uint8_t Up		: 1;
-        uint8_t Down	: 1;
-        uint8_t Set		: 1;
-        uint8_t GoHome	: 1;
+        uint8_t Left	 : 1;
+        uint8_t Right	 : 1;
+        uint8_t In		 : 1;
+        uint8_t Out		 : 1;
+        uint8_t Up		 : 1;
+        uint8_t Down	 : 1;
+        uint8_t Reseved1 : 1;
+        uint8_t Reseved2 : 1;
     } bits;
     uint8_t all;
 } Control_motor_t;
+
+typedef struct {
+    float target_position;    // Tọa độ mục tiêu (ví dụ: mm hoặc độ)
+    float target_speed;       // Tốc độ mục tiêu (ví dụ: mm/s)
+    float max_limit;          // Giới hạn phần mềm tối đa (Soft Limit Max)
+} Axis_Config_t;
+
 typedef union {
     struct {
-
-    	uint16_t glass_1		: 1;
-    	uint16_t glass_2		: 1;
-    	uint16_t glass_3		: 1;
-    	uint16_t Cover_1		: 1;
-    	uint16_t Cover_2		: 1;
-    	uint16_t Cover_3		: 1;
-    	uint16_t save_glass	: 1;
-    	uint16_t Save_Cover	: 1;
-    	uint16_t Save_Tray	: 1;
-    } bits;
-    uint16_t all;
-}Save_Tray_t;
-typedef union {
-    struct {
-    	uint8_t Home :1;
-    	uint8_t Motor :1;
-        uint8_t reserved : 6;
-
+    	uint8_t Go_Home   :1;
+    	uint8_t SetPoint  :1;
+        uint8_t Emergency :1;
+        uint8_t Restart   :1;
+        uint8_t Stop      :1;
+        uint8_t Reseved1  :4;
     } bits;
     uint8_t all;
 } Tab_Control_t;
 
-
-
-
-typedef union {
-    struct {
-    	uint16_t ruber1_1 		:1;
-    	uint16_t ruber1_2 		:1;
-    	uint16_t ruber1_3	    :1;
-    	uint16_t tray1_1		:1;
-    	uint16_t tray1_2		:1;
-    	uint16_t tray1_3    	:1;
-    	uint16_t tray2_1		:1;
-    	uint16_t tray2_2		:1;
-    	uint16_t tray2_3		:1;
-    	uint16_t led_move		:1;
-
-
-    } bits;
-    uint16_t all;
-} Motor_Lamp_t;
-
-typedef union
-{
-    struct {
-    	uint8_t reset 		:1;
-    	uint8_t start 		:1;
-    	uint8_t stop	    :1;
-    	uint8_t setX		:1;
-    	uint8_t setY		:1;
-    	uint8_t setZ    	:1;
-    	uint8_t Manual_auto :1;
-    	uint8_t ignor		:1;
-    } bits;
-    uint8_t all;
-}Home_controller;
-
-typedef union {
-    struct {
-    	uint8_t glass1 		:1;
-    	uint8_t glass2 		:1;
-    	uint8_t glass3 		:1;
-		uint8_t glass4 		:1;
-		uint8_t Run 		:1;
-		uint8_t ScanGlass 	:1;
-		uint8_t Reset 		:1;
-        uint8_t reserved 	:1;
-    } bits;
-    uint8_t all;
-} Worker_Control_t;
-extern uint16_t Glass_Index;
-extern uint8_t end_Cover;
-
-extern uint8_t* Lamp_Cover_done;
-extern uint16_t* Lamp_Cover_select;
-extern uint16_t* Cover_Select;
-
-extern uint16_t* Glass_Select;
-extern uint8_t* Lamp_glass_empty;
-extern uint16_t* Lamp_glass_select;
-extern Worker_Control_t* Worker_Control;
-extern Motor_Lamp_t* Motor_Lamp;
 extern Control_motor_t* Control_motor;
-extern Tab_Control_t* Tab;
-extern Home_controller * Home_controller_hmi;
-extern Save_Tray_t* Save_Tray;
-extern Save_Tray_t* Save_Tray_Indicator;
+extern Tab_Control_t* Main_controler;
 extern uint16_t* Mark;
 extern Tray2D * Point2D_Tray1;
 void HMI_Init(void);
