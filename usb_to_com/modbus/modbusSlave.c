@@ -7,21 +7,34 @@
 
 #include "modbusSlave.h"
 #include "string.h"
-
+#include "RS232.h"
 extern uint8_t RxData[256];
 extern uint8_t TxData[256];
 extern UART_HandleTypeDef huart2;
 
-uint16_t Holding_Registers_Database[50]={0,};
-uint8_t Coils_Database[50]={0,};
-uint8_t Inputs_Database[50]  = {0,};
-uint16_t Input_Registers_Database[50]={0,};
+static uint16_t Holding_Registers_Database[50]={0,};
+static uint8_t Coils_Database[50]={0,};
+static uint8_t Inputs_Database[50]  = {0,};
+static uint16_t Input_Registers_Database[50]={0,};
+
+Tab_Control_t* Main_controler = (Tab_Control_t*)&Coils_Database[0];
+Control_motor_t* Control_motor = (Control_motor_t*)&Coils_Database[1];
+Tray2D * Point2D_Tray1 = (Tray2D *)&Holding_Registers_Database[12];
 
 void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint16_t state )
 {
 	Input_Registers_Database[index]=toa_do;
 	Input_Registers_Database[index + 1]=toc_do;
 	Input_Registers_Database[index + 2]=state;
+}
+uint8_t Get_Coild(uint8_t index)
+{
+	if(index>50) return 0x00U;
+	return Coils_Database[index];
+}
+void Set_Inputs_Database(uint8_t index,uint8_t data)
+{
+	Inputs_Database[index]=data;
 }
 uint16_t Get_Holding_Registers(uint8_t index)
 {
@@ -31,8 +44,8 @@ uint16_t Get_Holding_Registers(uint8_t index)
 void Reset_Oxis(void)
 {
 	Holding_Registers_Database[0]=0x00U;
-	Holding_Registers_Database[1]=0x00U;
-	Holding_Registers_Database[2]=0x00U;
+	Holding_Registers_Database[3]=0x00U;
+	Holding_Registers_Database[6]=0x00U;
 }
 void Copy_Holding_Registers(uint8_t index,uint8_t index_coppy)
 {

@@ -144,6 +144,7 @@ void Task_Move_Oxis()
 }
 void Task_Run_HMI(void)
 {
+	Copy_target_fromPC();
 	if(Emergency == 0x01U)
 	{
 		// thêm chức năng emergency
@@ -343,7 +344,6 @@ void Handle_Down(uint8_t data)
 void Handle_Set(void)
 {
 	// lấy dữ liệu từ 4x Holding_Registers_Database để làm target
-	Copy_target_fromPC();
 	MC_MoveLinear(Rotbot_axis_target[0].target_position,Rotbot_axis_target[1].target_position,Rotbot_axis_target[2].target_position);
 
 }

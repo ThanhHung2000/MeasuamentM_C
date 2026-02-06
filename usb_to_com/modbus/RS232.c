@@ -11,15 +11,13 @@
 uint8_t RxData[RX_BUF_SIZE];
 uint8_t TxData[RX_BUF_SIZE];
 
-Tab_Control_t* Main_controler = (Tab_Control_t*)&Coils_Database[0];
-Control_motor_t* Control_motor = (Control_motor_t*)&Coils_Database[1];
 
-Tray2D * Point2D_Tray1 = (Tray2D *)&Holding_Registers_Database[12];
 
 
 
 void HMI_Init(void)
 {
+	//HAL_UARTEx_ReceiveToIdle_DMA(&huart2, RxData, RX_BUF_SIZE);
 	HAL_UARTEx_ReceiveToIdle_DMA(&huart2, RxData, RX_BUF_SIZE);
 	Init_hmi();
 }

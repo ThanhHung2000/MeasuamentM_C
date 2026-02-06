@@ -83,7 +83,7 @@ void MC_MoveAbsoluteTest(uint32_t posx,uint32_t posy,uint32_t posz, uint32_t fre
 void MC_MoveHandle(uint8_t axis,uint8_t status, int dir);
 uint8_t Move_Home_3Step(volatile uint8_t * home_tep);
 void Reset_position(void);
-void Copy_target_fromPC(void);
+//void Copy_target_fromPC(void);
 void Interrup_gpio(uint16_t GPIO_Pin);
 void Interrup_gpio_OX(void);
 void Interrup_gpio_OY(void);
