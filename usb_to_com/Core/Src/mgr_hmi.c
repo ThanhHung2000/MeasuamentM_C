@@ -85,6 +85,10 @@ uint8_t Get_home_done(void)
 {
 	return home_done;
 }
+uint8_t Get_Go_home(void)
+{
+	return home;
+}
 uint16_t FindActiveBit(uint8_t *data,uint8_t numbyte)
 {
     for (uint8_t byteIdx = 0; byteIdx < numbyte; ++byteIdx)
@@ -361,7 +365,7 @@ void Handle_Down(uint8_t data)
 
 void Handle_Set(void)
 {
-	if(Get_home_done()==0x00U) return ;
+	if(Get_home_done()==0x00U || Get_Go_home()==0x01U) return ;
 	// lấy dữ liệu từ 4x Holding_Registers_Database để làm target
 	MC_MoveLinear(Rotbot_axis_target[0].target_position,Rotbot_axis_target[1].target_position,Rotbot_axis_target[2].target_position);
 

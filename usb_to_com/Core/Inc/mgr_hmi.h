@@ -20,6 +20,6 @@ void Set_Emergency_Stop();
 
 
 uint8_t Get_home_done(void);
-
+uint8_t Get_Go_home(void);
 extern volatile uint8_t home;
 #endif /* INC_MGR_HMI_H_ */

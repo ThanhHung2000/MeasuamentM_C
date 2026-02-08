@@ -495,7 +495,7 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz )// thời điểm 
 }
 void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 {
-	if(Get_home_done()==0x00U) return ;
+	if(Get_home_done()==0x00U || Get_Go_home()==0x01U) return ;
 	switch(status)
 	{
 		case STATUS_JOGGING_OXIS:// jogging

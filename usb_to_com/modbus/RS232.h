@@ -57,7 +57,7 @@ typedef union {
         uint8_t Emergency :1;
         uint8_t Restart   :1;
         uint8_t Stop      :1;
-        uint8_t Reseved1  :4;
+        uint8_t Reseved1  :3;
     } bits;
     uint8_t all;
 } Tab_Control_t;
