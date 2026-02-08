@@ -1,6 +1,0 @@
-../Core/Src/drive_time.c:14:10:millis	4	static
-../Core/Src/drive_time.c:20:6:TIM7_Interrupt	16	static
-../Core/Src/drive_time.c:41:6:reset_timer	16	static
-../Core/Src/drive_time.c:54:6:reset_timer_one_channel	16	static
-../Core/Src/drive_time.c:61:6:Delay_SetTimer	16	static
-../Core/Src/drive_time.c:68:9:Delay_GetTimer	16	static
