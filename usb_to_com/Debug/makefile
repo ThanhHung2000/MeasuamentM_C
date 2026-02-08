@@ -68,8 +68,8 @@ all: main-build
 main-build: usb_to_com.elf secondary-outputs
 
 # Tool invocations
-usb_to_com.elf usb_to_com.map: $(OBJS) $(USER_OBJS) D:\Measurement_MC\MeasuamentM_C\usb_to_com\STM32F407VETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "usb_to_com.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\Measurement_MC\MeasuamentM_C\usb_to_com\STM32F407VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="usb_to_com.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+usb_to_com.elf usb_to_com.map: $(OBJS) $(USER_OBJS) D:\PhamVanHung\STM32\usb_to_com\STM32F407VETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "usb_to_com.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\PhamVanHung\STM32\usb_to_com\STM32F407VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="usb_to_com.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

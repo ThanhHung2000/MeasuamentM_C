@@ -30,8 +30,8 @@ Core/Src/drive.o: ../Core/Src/drive.c ../Core/Inc/drive.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h \
- D:/Measurement_MC/MeasuamentM_C/usb_to_com/modbus/modbusSlave.h \
- D:/Measurement_MC/MeasuamentM_C/usb_to_com/modbus/modbus_crc.h \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/modbusSlave.h \
+ D:/PhamVanHung/STM32/usb_to_com/modbus/modbus_crc.h \
  ../Core/Inc/mgr_hmi.h ../Core/Inc/dvr_gpio.h
 ../Core/Inc/drive.h:
 ../Core/Inc/main.h:
@@ -66,7 +66,7 @@ Core/Src/drive.o: ../Core/Src/drive.c ../Core/Inc/drive.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h:
-D:/Measurement_MC/MeasuamentM_C/usb_to_com/modbus/modbusSlave.h:
-D:/Measurement_MC/MeasuamentM_C/usb_to_com/modbus/modbus_crc.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/modbusSlave.h:
+D:/PhamVanHung/STM32/usb_to_com/modbus/modbus_crc.h:
 ../Core/Inc/mgr_hmi.h:
 ../Core/Inc/dvr_gpio.h:

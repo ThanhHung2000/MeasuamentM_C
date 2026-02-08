@@ -231,6 +231,13 @@ uint8_t MC_MoveHomeAbsolute(MC_Axis_t* axis)
 	}
 	return 0x01U;
 }
+void Emergency_Stop(void)
+{
+	for(int i=0;i<NUM_AXIT_ROBOT;i++)
+	{
+		MC_MoveHomeAbsolute(&Rotbot_axis[i]);// thay đổi tần số ở đây
+	}
+}
 void Interrup_gpio_OX(void)
 {
 		GPIOA->ODR &=~(1<<9u);

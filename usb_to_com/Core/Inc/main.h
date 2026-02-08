@@ -78,8 +78,6 @@ void Error_Handler(void);
 #define O17_Duphong8_GPIO_Port GPIOE
 #define O18_Duphong9_Pin GPIO_PIN_13
 #define O18_Duphong9_GPIO_Port GPIOC
-#define I4_E_stop_Pin GPIO_PIN_3
-#define I4_E_stop_GPIO_Port GPIOC
 #define I5_STOP_Pin GPIO_PIN_4
 #define I5_STOP_GPIO_Port GPIOC
 #define I6_START_Pin GPIO_PIN_5

@@ -18,9 +18,8 @@
 #include "drive.h"
 
 
-int8_t fisrtbit=0x00U;
-uint8_t Emergency = 0;
-uint8_t Glass_group = 0;
+static int8_t fisrtbit=0x00U;
+static uint8_t Emergency = 0;
 uint8_t save=0x00U;
 volatile uint8_t home=0x00U;
 volatile uint8_t home_done=0x00U;
@@ -28,7 +27,6 @@ uint8_t start_run=0x00U;
 uint8_t stop_run=0x00U;
 static uint8_t state=0x00U;
 static float dX, dY, Angle;
-#define HMI_STATE_BUTTON    0x01U
 typedef struct {
     uint8_t last_state;    // Trạng thái Coil ở chu kỳ 1ms trước
     uint32_t press_timer;  // Bộ đếm thời gian (ms)
@@ -146,12 +144,21 @@ void Task_Move_Oxis()
 		hmi_btns[i].last_state = current_state;
 	}
 }
+void Set_Emergency_Stop()
+{
+	Emergency=0x01U;
+}
 void Task_Run_HMI(void)
 {
 	Copy_target_fromPC();
 	if(Emergency == 0x01U )
 	{
-		// thêm chức năng emergency
+		Emergency_Stop();
+		if(Get_State_Sensor(0x003U)==0x00U)
+		{
+			Emergency=0x00U;
+			home=0x01U;
+		}
 		return;
 	}
 	uint8_t current_main = Main_controler->all;

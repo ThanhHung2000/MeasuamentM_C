@@ -16,6 +16,7 @@
 void Task_Run_HMI(void);
 void Task_Run_Home(void);
 void Init_hmi(void);
+void Set_Emergency_Stop();
 
 
 uint8_t Get_home_done(void);
