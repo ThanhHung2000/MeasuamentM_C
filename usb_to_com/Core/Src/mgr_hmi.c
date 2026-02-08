@@ -15,7 +15,7 @@
 #include"dvr_gpio.h"
 #include <math.h>
 #include "flash_data.h"
-
+#include "drive.h"
 
 
 int8_t fisrtbit=0x00U;
@@ -23,6 +23,7 @@ uint8_t Emergency = 0;
 uint8_t Glass_group = 0;
 uint8_t save=0x00U;
 volatile uint8_t home=0x00U;
+volatile uint8_t home_done=0x00U;
 uint8_t start_run=0x00U;
 uint8_t stop_run=0x00U;
 static uint8_t state=0x00U;
@@ -82,7 +83,10 @@ Main_Handle_Controler Main_Table[5] =
 void Init_hmi(void)
 {
 }
-
+uint8_t Get_home_done(void)
+{
+	return home_done;
+}
 uint16_t FindActiveBit(uint8_t *data,uint8_t numbyte)
 {
     for (uint8_t byteIdx = 0; byteIdx < numbyte; ++byteIdx)
@@ -145,7 +149,7 @@ void Task_Move_Oxis()
 void Task_Run_HMI(void)
 {
 	Copy_target_fromPC();
-	if(Emergency == 0x01U)
+	if(Emergency == 0x01U )
 	{
 		// thêm chức năng emergency
 		return;
@@ -300,6 +304,7 @@ void Task_Run_Home(void)
 		{
 			Reset_position();
 			home=0x00U;
+			home_done=0x01U;
 			Reset_Oxis();
 		}
 	}
@@ -343,6 +348,7 @@ void Handle_Down(uint8_t data)
 
 void Handle_Set(void)
 {
+	if(Get_home_done()==0x00U) return ;
 	// lấy dữ liệu từ 4x Holding_Registers_Database để làm target
 	MC_MoveLinear(Rotbot_axis_target[0].target_position,Rotbot_axis_target[1].target_position,Rotbot_axis_target[2].target_position);
 

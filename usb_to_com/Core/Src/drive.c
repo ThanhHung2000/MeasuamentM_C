@@ -58,7 +58,6 @@ void Copy_target_fromPC(void)
 	{
 		Rotbot_axis_target[i].target_position = Get_Holding_Registers(Rotbot_axis[i].indexaxis);
 		Rotbot_axis_target[i].target_speed=     Get_Holding_Registers(Rotbot_axis[i].indexaxis +1);
-		Rotbot_axis_target[i].max_limit =       Get_Holding_Registers(Rotbot_axis[i].indexaxis +2);
 	}
 }
 void Reset_position(void)
@@ -67,7 +66,7 @@ void Reset_position(void)
 	{
 		Rotbot_axis[i].current_pos =0x00U;
 		Rotbot_axis[i].target_pos =0x00U;
-		Rotbot_axis[i].current_speed=SET_SPEED_1000HZ;
+		Rotbot_axis[i].current_speed=0x00U;
 		Rotbot_axis[i].target_speed=0X00U;
 		Rotbot_axis[i].accel =0X00U;
 		Rotbot_axis[i].state =STANDSTILL;
@@ -86,7 +85,7 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_X_ROBOT].channel=TIM_CHANNEL_1;
 	Rotbot_axis[AXIT_X_ROBOT].channel_counter=TIM_CHANNEL_2;
 	Rotbot_axis[AXIT_X_ROBOT].Set_Direction_Pin=Set_Direction_OX;
-	Rotbot_axis[AXIT_X_ROBOT].max_axis=&Rotbot_axis_target[AXIT_X_ROBOT].max_limit;
+	Rotbot_axis[AXIT_X_ROBOT].max_axis=MAX_Axis_OX;//&Rotbot_axis_target[AXIT_X_ROBOT].max_limit;
 	Rotbot_axis[AXIT_X_ROBOT].indexaxis=0x00U;
 	// TRỤC Y
 	Rotbot_axis[AXIT_Y_ROBOT].htim= &htim3;
@@ -94,7 +93,7 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_Y_ROBOT].channel=TIM_CHANNEL_1;
 	Rotbot_axis[AXIT_Y_ROBOT].channel_counter=TIM_CHANNEL_1;
 	Rotbot_axis[AXIT_Y_ROBOT].Set_Direction_Pin=Set_Direction_OY;
-	Rotbot_axis[AXIT_Y_ROBOT].max_axis=&Rotbot_axis_target[AXIT_Y_ROBOT].max_limit;
+	Rotbot_axis[AXIT_Y_ROBOT].max_axis=MAX_Axis_OY;//&Rotbot_axis_target[AXIT_Y_ROBOT].max_limit;
 	Rotbot_axis[AXIT_Y_ROBOT].indexaxis=0x03U;
 	// TRỤC Z
 	Rotbot_axis[AXIT_Z_ROBOT].htim= &htim8;
@@ -102,7 +101,7 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_Z_ROBOT].channel=TIM_CHANNEL_3;
 	Rotbot_axis[AXIT_Z_ROBOT].channel_counter=TIM_CHANNEL_1;
 	Rotbot_axis[AXIT_Z_ROBOT].Set_Direction_Pin=Set_Direction_OZ;
-	Rotbot_axis[AXIT_Z_ROBOT].max_axis=&Rotbot_axis_target[AXIT_Z_ROBOT].max_limit;
+	Rotbot_axis[AXIT_Z_ROBOT].max_axis=MAX_Axis_OZ;//&Rotbot_axis_target[AXIT_Z_ROBOT].max_limit;
 	Rotbot_axis[AXIT_Z_ROBOT].indexaxis=0x06U;
 	Reset_position();
 }
@@ -118,10 +117,11 @@ void MC_MoveAbsolute_old(MC_Axis_t* axis, int32_t pos, uint32_t speed)// mục �
 	if(axis->state == AXIS_ERROR || axis->busy == 0x01) return;
 
 	// 2. Gán các tham số mục tiêu
-	if(pos >= *(axis->max_axis)) pos=*(axis->max_axis);
-	if(pos <= 0x00U) pos=100U;// tránh chạm home liên tục sinh ngắt
+	if(pos >= axis->max_axis) pos=axis->max_axis;
+	if(pos <= 0x00U) pos=0x00U;//
 	axis->target_pos = pos;
-	axis->target_speed = speed;
+	axis->target_speed = (speed>=50000U) ? 50000U : speed;
+	speed = (speed <= 1000U) ? 1000U : speed;
 	axis->accel = jerk_table[(speed/(uint32_t)1000)-1] ;// speed là 1k đến 50k
 	// 3. Xác định hướng di chuyển
 	if (axis->target_pos > axis->current_pos) {
@@ -152,8 +152,8 @@ void MC_MoveAbsolute(MC_Axis_t* axis, int32_t pos, uint32_t speed)// mục đíc
 		if(axis->state == AXIS_ERROR || axis->busy == 0x01) return;
 
 		// 2. Gán các tham số mục tiêu
-		if(pos >= *(axis->max_axis)) pos= *(axis->max_axis);
-		if(pos <= 0x00U) pos=100U;// tránh chạm home liên tục sinh ngắt
+		if(pos >= axis->max_axis) pos= axis->max_axis;
+		if(pos <= 0x00U) pos=0U;// tránh chạm home liên tục sinh ngắt
 		axis->target_pos = pos;
 		axis->target_speed = speed;
 		axis->accel = jerk_table[(speed/(uint32_t)1000)-1] ;// speed là 1k đến 50k
@@ -203,7 +203,6 @@ void MC_Stop(MC_Axis_t* axis)// mục đích Kích hoạt dừng tuyệt đối 
 		axis->offset=0x01U;
 	}
 }
-//Get_State_Sensor(AXIT_X_ROBOT);
 
 void MC_MoveAbsoluteTest(uint32_t posx,uint32_t posy,uint32_t posz, uint32_t freq)// freq sẽ nhận giá trị 1k đến 50k
 {
@@ -431,14 +430,36 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 				{
 					time =0x00U;
 					onetime=0x00U;
-					step=0x00U;
-					return 0x01U;
+					step=0x05U;
+					Reset_position();
 
 				}
 			}
 		}
 		break;
+		case 0x05U://
+		{
+			if(onetime==0x00U)
+			{
+				MC_MoveAbsolute(&Rotbot_axis[0],100U,1000U);
+				MC_MoveAbsolute(&Rotbot_axis[1],100U,1000U);
+				MC_MoveAbsolute(&Rotbot_axis[2],100U,1000U);
+				onetime=0x01U;
+			}
+			if(Motor_Busy()==0x00U)
+			{
+				if(++time>=1000U)
+				{
+					time =0x00U;
+					onetime=0x00U;
+					step=0x00U;
+					return 0x01U;
 
+				}
+			}
+
+		}
+		break;
 		default:
 		break;
 	}
@@ -467,11 +488,12 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz )// thời điểm 
 }
 void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 {
+	if(Get_home_done()==0x00U) return ;
 	switch(status)
 	{
 		case STATUS_JOGGING_OXIS:// jogging
 		{
-			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(*(Rotbot_axis[axis].max_axis)),3000U);
+			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),3000U);
 		}
 		break;
 		case STATUS_STEP_OXIS:// step
@@ -604,7 +626,7 @@ void Rotbot_controler(MC_Axis_t* axis)
         }
         else if ( axis->current_pos == axis->target_pos || axis->ramp_time==0x00U)
         {
-            axis->current_speed = SET_SPEED_1000HZ;
+            axis->current_speed = 0x00U;
             axis->state = STANDSTILL;
             axis->done = 0x01U;
             axis->ramp_time=0x00U;
@@ -623,15 +645,18 @@ void  MC_Control_Interrupt(void)
 uint8_t Set_Direction_OX(uint8_t status)
 {
 	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9, status );
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9, status );
 	return HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9) > 0x00U ? 0x01U:0x00U;
 }
 uint8_t Set_Direction_OY(uint8_t status)
 {
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_7, status );
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_7, status );
 	return HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_7) > 0x00U ? 0x01U:0x00U;
 }
 uint8_t Set_Direction_OZ(uint8_t status)
 {
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_9, status );
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_9, status );
 	return HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_9) > 0x00U ? 0x01U:0x00U;
 }

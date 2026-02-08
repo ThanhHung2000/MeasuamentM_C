@@ -12,9 +12,9 @@
 #define  SET_SPEED_1000HZ                1000U  // 1
 #define  SET_SPEED_500HZ                 499U  // 1
 #define  TIME_RAMPING                    101U
-#define  MAX_Axis_OX					55000U
-#define  MAX_Axis_OX					55000U
-#define  MAX_Axis_OX					55000U
+#define  MAX_Axis_OX					54800U
+#define  MAX_Axis_OY					28000U
+#define  MAX_Axis_OZ					13000U
 
 #define NUM_AXIT_ROBOT 0x03
 #define AXIT_X_ROBOT   0x00
@@ -65,7 +65,7 @@ typedef struct {
 	uint8_t error;   // Bằng 1 khi trục gặp sự cố
 	uint8_t active;  // Bằng 1 khi trục đang có quyền điều khiển hardware
 	uint8_t indexaxis;
-	int32_t *max_axis;
+	int32_t max_axis;
 	volatile uint8_t homing;
 
 } MC_Axis_t;
@@ -89,6 +89,7 @@ void Interrup_gpio_OX(void);
 void Interrup_gpio_OY(void);
 void Interrup_gpio_OZ(void);
 uint8_t Motor_Busy(void);
+void Copy_target_fromPC(void);
 extern Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT];
 //uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz,float freq_max );
 

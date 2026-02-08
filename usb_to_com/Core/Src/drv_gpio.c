@@ -82,7 +82,7 @@ void Gpio_input()
 	input_sensor_current=Gpio_read_input();
     for (int i = 0; i < NUM_SENSORS; i++)
     {
-    	input_read=(input_sensor_current &(1<<i)) ? 0x00U :0x01U;
+    	input_read=(input_sensor_current &(1<<i)) ? 0x01U :0x00U;
         // 2. So sánh với lần đọc trước
         if (input_read == sensor.Last_Sensor_Reading[i])
         {

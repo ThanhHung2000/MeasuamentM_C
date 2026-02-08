@@ -27,6 +27,10 @@ void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint1
 	Input_Registers_Database[index + 1]=toc_do;
 	Input_Registers_Database[index + 2]=state;
 }
+void Set_Input_Register(uint8_t index, uint16_t data)
+{
+	Input_Registers_Database[index]=data;
+}
 uint8_t Get_Coild(uint8_t index)
 {
 	if(index>50) return 0x00U;
@@ -43,9 +47,9 @@ uint16_t Get_Holding_Registers(uint8_t index)
 }
 void Reset_Oxis(void)
 {
-	Holding_Registers_Database[0]=0x00U;
-	Holding_Registers_Database[3]=0x00U;
-	Holding_Registers_Database[6]=0x00U;
+	Set_Input_Register(0x00U,0x00U);
+	Set_Input_Register(3U,0x00U);
+	Set_Input_Register(6U,0x00U);
 }
 void Copy_Holding_Registers(uint8_t index,uint8_t index_coppy)
 {

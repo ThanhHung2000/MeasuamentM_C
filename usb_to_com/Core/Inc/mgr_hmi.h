@@ -18,7 +18,7 @@ void Task_Run_Home(void);
 void Init_hmi(void);
 
 
-
+uint8_t Get_home_done(void);
 
 extern volatile uint8_t home;
 #endif /* INC_MGR_HMI_H_ */
