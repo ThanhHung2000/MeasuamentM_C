@@ -501,6 +501,7 @@ void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 		case STATUS_JOGGING_OXIS:// jogging
 		{
 			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),3000U);
+			Rotbot_axis[axis].jogging =0x01U;
 		}
 		break;
 		case STATUS_STEP_OXIS:// step
@@ -531,6 +532,7 @@ void Rotbot_controler(MC_Axis_t* axis)
 {
 	int32_t curent_counter=0x00U;
 	uint32_t new_arr=0x00U;
+	static uint16_t timer_jogging1khz=0x00U;
     switch (axis->state)
     {
 		case START_RUN:
@@ -540,6 +542,12 @@ void Rotbot_controler(MC_Axis_t* axis)
 			{
 				axis->state =HOME_STOPPING;
 				//time1khz=0x00U;
+			}
+			else if(axis->jogging==0x01U)
+			{
+				axis->state =JOGGING_RUN;
+				axis->jogging=0x00U;
+				timer_jogging1khz=0x01U;
 			}
 			else
 			{
@@ -596,6 +604,16 @@ void Rotbot_controler(MC_Axis_t* axis)
 				axis->current_speed =SET_SPEED_500HZ;
 			}
         	break;
+        case JOGGING_RUN:
+			{
+				axis->current_speed =SET_SPEED_500HZ;
+				if(timer_jogging1khz>=500U)
+				{
+					timer_jogging1khz=0x00U;
+					axis->state = ACCELERATING;
+				}
+			}
+			break;
         default:
             break;
     }
@@ -625,6 +643,7 @@ void Rotbot_controler(MC_Axis_t* axis)
         if(axis->done == 0x01U)
         {
         	axis->homing=0x00U;
+        	timer_jogging1khz=0x00U;
         	axis->done = 0x00U;
             axis->busy = 0x00U;// lần sau mới cho busy về 0
             __HAL_TIM_SET_COMPARE(axis->htim, axis->channel, 0x00u);

@@ -37,7 +37,8 @@ typedef enum {
     DECELERATING,    // Đang giảm tốc
 	HOME_STOPPING,
     POSITION_REACHED, // Đã đến đích
-	AXIS_ERROR        // TRẠNG THÁI LỖI (Cần Reset mới chạy lại được)
+	AXIS_ERROR,        // TRẠNG THÁI LỖI (Cần Reset mới chạy lại được)
+	JOGGING_RUN
 } AxisState;
 typedef struct {
     // Cấu hình phần cứng
@@ -67,6 +68,8 @@ typedef struct {
 	uint8_t indexaxis;
 	int32_t max_axis;
 	volatile uint8_t homing;
+	volatile uint8_t jogging;
+
 
 } MC_Axis_t;
 typedef struct {
