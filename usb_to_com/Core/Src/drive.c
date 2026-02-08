@@ -606,7 +606,7 @@ void Rotbot_controler(MC_Axis_t* axis)
         	break;
         case JOGGING_RUN:
 			{
-				axis->current_speed =SET_SPEED_500HZ;
+				axis->current_speed =SET_SPEED_1000HZ;
 				if(timer_jogging1khz>=500U)
 				{
 					timer_jogging1khz=0x00U;
