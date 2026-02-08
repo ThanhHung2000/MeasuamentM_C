@@ -329,7 +329,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 				if(Motor_Busy()==0x00U)
 				{
 					Rotbot_axis[2].current_pos=13000U;
-					if(Get_State_Sensor(AXIT_Z_ROBOT)==0x00U) MC_MoveAbsolute(&Rotbot_axis[2],0x00U,5000U);// di chuyển về home
+					if(Get_State_Sensor(AXIT_Z_ROBOT)==0x00U) MC_MoveAbsolute(&Rotbot_axis[2],0x00U,3000U);// di chuyển về home
 					if(++counter_100 >= 2U)
 					{
 						onetime=0x01U;
@@ -500,8 +500,8 @@ void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 	{
 		case STATUS_JOGGING_OXIS:// jogging
 		{
-			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),3000U);
-			Rotbot_axis[axis].jogging =0x01U;
+			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),5000U);
+			if(Rotbot_axis[axis].timer_jogging1khz==0x00U) Rotbot_axis[axis].jogging =0x01U;
 		}
 		break;
 		case STATUS_STEP_OXIS:// step
@@ -532,7 +532,6 @@ void Rotbot_controler(MC_Axis_t* axis)
 {
 	int32_t curent_counter=0x00U;
 	uint32_t new_arr=0x00U;
-	static uint16_t timer_jogging1khz=0x00U;
     switch (axis->state)
     {
 		case START_RUN:
@@ -541,13 +540,12 @@ void Rotbot_controler(MC_Axis_t* axis)
 			if(axis->homing==0x01U)
 			{
 				axis->state =HOME_STOPPING;
-				//time1khz=0x00U;
 			}
 			else if(axis->jogging==0x01U)
 			{
 				axis->state =JOGGING_RUN;
 				axis->jogging=0x00U;
-				timer_jogging1khz=0x01U;
+				axis->timer_jogging1khz=0x01U;
 			}
 			else
 			{
@@ -606,10 +604,10 @@ void Rotbot_controler(MC_Axis_t* axis)
         	break;
         case JOGGING_RUN:
 			{
-				axis->current_speed =SET_SPEED_1000HZ;
-				if(timer_jogging1khz>=500U)
+				axis->current_speed =SET_SPEED_500HZ;
+				if(++axis->timer_jogging1khz>=1000U)
 				{
-					timer_jogging1khz=0x00U;
+					axis->timer_jogging1khz=0x00U;
 					axis->state = ACCELERATING;
 				}
 			}
@@ -643,7 +641,7 @@ void Rotbot_controler(MC_Axis_t* axis)
         if(axis->done == 0x01U)
         {
         	axis->homing=0x00U;
-        	timer_jogging1khz=0x00U;
+        	axis->timer_jogging1khz=0x00U;
         	axis->done = 0x00U;
             axis->busy = 0x00U;// lần sau mới cho busy về 0
             __HAL_TIM_SET_COMPARE(axis->htim, axis->channel, 0x00u);

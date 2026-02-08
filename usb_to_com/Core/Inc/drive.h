@@ -69,6 +69,7 @@ typedef struct {
 	int32_t max_axis;
 	volatile uint8_t homing;
 	volatile uint8_t jogging;
+	uint16_t timer_jogging1khz;
 
 
 } MC_Axis_t;
