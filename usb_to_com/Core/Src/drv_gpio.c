@@ -110,8 +110,7 @@ void Gpio_input()
 }
 void Task_gpio_input(void)// copy dữ liệu sang địa chỉ 10000
 {
-	uint32_t gpio_input=0x00U;
-	gpio_input=Get_home_done()<<18U;
+	uint32_t gpio_input=((uint32_t)Get_home_done()<<18U);
 	for (int i = 0; i < NUM_SENSORS; i++)
 	{
 		if(sensor.Sensor_State[i])
