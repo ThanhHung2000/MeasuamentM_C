@@ -1,1 +1,4 @@
 .metadata/ 
+Debug/ 
+*.o 
+*.su 
