@@ -8,6 +8,7 @@
 #include "modbusSlave.h"
 #include "string.h"
 #include "RS232.h"
+#include "mgr_hmi.h"
 extern uint8_t RxData[256];
 extern uint8_t TxData[256];
 extern UART_HandleTypeDef huart2;

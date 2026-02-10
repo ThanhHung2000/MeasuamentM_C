@@ -351,7 +351,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			if(Get_State_Sensor(AXIT_Z_ROBOT)) MC_MoveHomeAbsolute(&Rotbot_axis[AXIT_Z_ROBOT]);// nếu chạm home thì dừng
 			if(Motor_Busy()==0x00U)
 			{
-				if(++time>=10U)
+				if(++time>=5U)
 				{
 					time =0x00U;
 					step=0x02U;
@@ -396,7 +396,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			if(Get_State_Sensor(AXIT_Z_ROBOT)) MC_MoveHomeAbsolute(&Rotbot_axis[AXIT_Z_ROBOT]);
 			if(Motor_Busy()==0x00U)
 			{
-				if(++time>=10U)
+				if(++time>=5U)
 				{
 					time =0x00U;
 					step=0x03U;
@@ -423,7 +423,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			if(Motor_Busy()==0x00U)
 			{
 
-				if(++time>=10U)
+				if(++time>=5U)
 				{
 					time =0x00U;
 					step=0x04U;
@@ -454,7 +454,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			if(Get_State_Sensor(AXIT_Z_ROBOT)) MC_MoveHomeAbsolute(&Rotbot_axis[AXIT_Z_ROBOT]);
 			if(Motor_Busy()==0x00U)
 			{
-				if(++time>=10U)
+				if(++time>=5U)
 				{
 					time =0x00U;
 					onetime=0x00U;
@@ -476,7 +476,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			}
 			if(Motor_Busy()==0x00U)
 			{
-				if(++time>=10U)
+				if(++time>=5U)
 				{
 					time =0x00U;
 					onetime=0x00U;
@@ -521,7 +521,7 @@ void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 	{
 		case STATUS_JOGGING_OXIS:// jogging
 		{
-			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),10000U);
+			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),5000U);
 			if(Rotbot_axis[axis].timer_jogging1khz==0x00U) Rotbot_axis[axis].jogging =0x01U;
 		}
 		break;
@@ -601,7 +601,11 @@ void Rotbot_controler(MC_Axis_t* axis)
             break;
 
         case CONSTANT_VEL:// chạy với tần số cố định
-        	if((axis->delta_pos-axis->counter_pos) <= axis->fulse_stop)
+        	if(axis->timer_jogging1khz)
+        	{
+        		if(axis->target_speed>SET_SPEED_1000HZ) axis->current_speed = axis->target_speed;
+        	}
+        	else if((axis->delta_pos-axis->counter_pos) <= axis->fulse_stop)
 			{
         		axis->state = DECELERATING;
 			}
@@ -626,18 +630,21 @@ void Rotbot_controler(MC_Axis_t* axis)
         	break;
         case JOGGING_RUN:
 			{
+
 				if(++axis->timer_jogging1khz>=40U)
 				{
 					axis->timer_jogging1khz=0x00U;
 					axis->ramp_time++;
 					axis->current_speed = SET_SPEED_500HZ + (uint32_t)((axis->accel)*triangle_array[axis->ramp_time]);
+
+					if(axis->ramp_time>=TIME_RAMPING)
+					{
+						axis->ramp_time --;
+						axis->timer_jogging1khz=0x01U;
+						axis->state = CONSTANT_VEL;
+					}
 				}
-	        	if(axis->ramp_time>=TIME_RAMPING)
-				{
-	        		axis->ramp_time --;
-	        		axis->timer_jogging1khz=0x00U;
-	        		axis->state = CONSTANT_VEL;
-				}
+
 			}
 			break;
         default:

@@ -171,6 +171,7 @@ void Task_Run_HMI(void)
 		}
 		return;
 	}
+	if(home==0x01U) return;
 	uint8_t current_main = Main_controler->all;
 	fisrtbit = __builtin_ffs(current_main)-1;
 	if(fisrtbit >= 0)
@@ -365,7 +366,7 @@ void Handle_Down(uint8_t data)
 
 void Handle_Set(void)
 {
-	if(Get_home_done()==0x00U || Get_Go_home()==0x01U) return ;
+	if(Get_home_done()==0x00U || Get_Go_home()!=0x00U) return ;//home!=0x00u
 	// lấy dữ liệu từ 4x Holding_Registers_Database để làm target
 	MC_MoveLinear(Rotbot_axis_target[0].target_position,Rotbot_axis_target[1].target_position,Rotbot_axis_target[2].target_position);
 

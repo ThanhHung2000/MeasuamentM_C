@@ -12,7 +12,7 @@
 #define  SET_SPEED_1000HZ                1000U  // 1
 #define  SET_SPEED_500HZ                 499U  // 1
 #define  TIME_RAMPING                    101U
-#define  MAX_Axis_OX					54800U
+#define  MAX_Axis_OX					54000U
 #define  MAX_Axis_OY					27800U
 #define  MAX_Axis_OZ					13000U
 
