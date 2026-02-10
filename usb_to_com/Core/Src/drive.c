@@ -360,9 +360,9 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 					Rotbot_axis[0].current_pos=55000U;
 					Rotbot_axis[1].current_pos=28000U;
 					Rotbot_axis[2].current_pos=13000U;
-					if(Get_State_Sensor(AXIT_X_ROBOT) ==0x00U ) MC_MoveAbsolute(&Rotbot_axis[0],0x00U,1500U);
+					if(Get_State_Sensor(AXIT_X_ROBOT) ==0x00U ) MC_MoveAbsolute(&Rotbot_axis[0],0x00U,3000U);
 					if(Get_State_Sensor(AXIT_Y_ROBOT) ==0x00U) MC_MoveAbsolute(&Rotbot_axis[1],0x00U,1500U);
-					if(Get_State_Sensor(AXIT_Z_ROBOT) ==0x00U) MC_MoveAbsolute(&Rotbot_axis[2],0x00U,1500U);
+					if(Get_State_Sensor(AXIT_Z_ROBOT) ==0x00U) MC_MoveAbsolute(&Rotbot_axis[2],0x00U,2000U);
 				    if(++counter_100 > 1U)
 					{
 				    	onetime=0x01U;
