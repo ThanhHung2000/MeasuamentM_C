@@ -316,7 +316,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 	static uint16_t counter_100=0x00U;
 	static uint8_t onetime=0x00U;
 	static uint8_t step=0x00U;
-	static uint16_t time=0x00U;
+	static uint8_t time=0x00U;
 	if( *home_tep == 0x01)
 	{
 		step=0x01U;
@@ -332,7 +332,14 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			{
 				if(Motor_Busy()==0x00U)
 				{
-					Rotbot_axis[2].current_pos=13000U;
+					if(Get_home_done())
+					{
+						Rotbot_axis[2].current_pos +=200U;
+					}
+					else
+					{
+						Rotbot_axis[2].current_pos=13000U;
+					}
 					if(Get_State_Sensor(AXIT_Z_ROBOT)==0x00U) MC_MoveAbsolute(&Rotbot_axis[2],0x00U,3000U);// di chuyển về home
 					if(++counter_100 >= 2U)
 					{
@@ -344,7 +351,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			if(Get_State_Sensor(AXIT_Z_ROBOT)) MC_MoveHomeAbsolute(&Rotbot_axis[AXIT_Z_ROBOT]);// nếu chạm home thì dừng
 			if(Motor_Busy()==0x00U)
 			{
-				if(++time>=1000U)
+				if(++time>=10U)
 				{
 					time =0x00U;
 					step=0x02U;
@@ -361,9 +368,18 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			{
 				if(Motor_Busy()==0x00U)
 				{
-					Rotbot_axis[0].current_pos=55000U;
-					Rotbot_axis[1].current_pos=28000U;
-					Rotbot_axis[2].current_pos=13000U;
+					if(Get_home_done())
+					{
+						Rotbot_axis[0].current_pos +=1000U;
+						Rotbot_axis[1].current_pos +=1000U;
+						Rotbot_axis[2].current_pos +=1000U;
+					}
+					else
+					{
+						Rotbot_axis[0].current_pos =55000U;
+						Rotbot_axis[1].current_pos =28000U;
+						Rotbot_axis[2].current_pos +=200U;
+					}
 					if(Get_State_Sensor(AXIT_X_ROBOT) ==0x00U ) MC_MoveAbsolute(&Rotbot_axis[0],0x00U,3000U);
 					if(Get_State_Sensor(AXIT_Y_ROBOT) ==0x00U) MC_MoveAbsolute(&Rotbot_axis[1],0x00U,1500U);
 					if(Get_State_Sensor(AXIT_Z_ROBOT) ==0x00U) MC_MoveAbsolute(&Rotbot_axis[2],0x00U,2000U);
@@ -380,7 +396,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			if(Get_State_Sensor(AXIT_Z_ROBOT)) MC_MoveHomeAbsolute(&Rotbot_axis[AXIT_Z_ROBOT]);
 			if(Motor_Busy()==0x00U)
 			{
-				if(++time>=1000U)
+				if(++time>=10U)
 				{
 					time =0x00U;
 					step=0x03U;
@@ -407,7 +423,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			if(Motor_Busy()==0x00U)
 			{
 
-				if(++time>=1000U)
+				if(++time>=10U)
 				{
 					time =0x00U;
 					step=0x04U;
@@ -417,6 +433,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 					Rotbot_axis[2].current_pos +=1000U;
 				}
 			}
+			else time=0x00U;
 		}
 		break;
 		case 0x04U://
@@ -437,29 +454,29 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			if(Get_State_Sensor(AXIT_Z_ROBOT)) MC_MoveHomeAbsolute(&Rotbot_axis[AXIT_Z_ROBOT]);
 			if(Motor_Busy()==0x00U)
 			{
-				if(++time>=1000U)
+				if(++time>=10U)
 				{
 					time =0x00U;
 					onetime=0x00U;
 					step=0x05U;
 					Reset_position();
-
 				}
 			}
+			else time=0x00U;
 		}
 		break;
 		case 0x05U://
 		{
 			if(onetime==0x00U)
 			{
-				MC_MoveAbsolute(&Rotbot_axis[0],100U,1000U);
-				MC_MoveAbsolute(&Rotbot_axis[1],100U,1000U);
-				MC_MoveAbsolute(&Rotbot_axis[2],100U,1000U);
+				MC_MoveAbsolute(&Rotbot_axis[0],200U,1000U);
+				MC_MoveAbsolute(&Rotbot_axis[1],200U,1000U);
+				MC_MoveAbsolute(&Rotbot_axis[2],200U,1000U);
 				onetime=0x01U;
 			}
 			if(Motor_Busy()==0x00U)
 			{
-				if(++time>=1000U)
+				if(++time>=10U)
 				{
 					time =0x00U;
 					onetime=0x00U;
@@ -468,7 +485,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 
 				}
 			}
-
+			else time=0x00U;
 		}
 		break;
 		default:

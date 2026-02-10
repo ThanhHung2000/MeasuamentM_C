@@ -161,7 +161,7 @@ void Task_Run_HMI(void)
 		Emergency_Stop();
 		if(Get_State_Sensor(0x003U)==0x00U)
 		{
-			if(++timer_Emergency_off>=10U)
+			if(++timer_Emergency_off>=10U)// sau 10ms nhả nút Emergency thì về home
 			{
 				timer_Emergency_off=0x00U;
 				Emergency=0x00U;

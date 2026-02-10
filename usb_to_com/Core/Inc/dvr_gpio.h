@@ -9,8 +9,8 @@
 #define INC_DVR_GPIO_H_
 
 #include "main.h"
-#define NUMBER_GPIO_SAMPLING 0x0AU
-#define NUM_SENSORS        18U
+#define NUMBER_GPIO_SAMPLING 0x02U
+#define NUM_SENSORS          18U
 
 typedef struct
 {

@@ -143,13 +143,12 @@ int main(void)
 		time_on=Delay_GetTimer(TID_TIMER_1ms);
 		if(time_on==0x01)
 		{
+			Task_Run_Home();
 			Task_Run_HMI();
 			Task_gpio_output();
 			Task_gpio_input();
 		}
-		Task_Run_Home();
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
