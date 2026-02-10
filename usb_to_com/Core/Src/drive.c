@@ -521,7 +521,7 @@ void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 	{
 		case STATUS_JOGGING_OXIS:// jogging
 		{
-			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),1000U);
+			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),10000U);
 			if(Rotbot_axis[axis].timer_jogging1khz==0x00U) Rotbot_axis[axis].jogging =0x01U;
 		}
 		break;
@@ -566,6 +566,7 @@ void Rotbot_controler(MC_Axis_t* axis)
 			{
 				axis->state =JOGGING_RUN;
 				axis->jogging=0x00U;
+
 				axis->timer_jogging1khz=0x01U;
 			}
 			else
@@ -625,11 +626,17 @@ void Rotbot_controler(MC_Axis_t* axis)
         	break;
         case JOGGING_RUN:
 			{
-				axis->current_speed =SET_SPEED_500HZ;
-				if(++axis->timer_jogging1khz>=1000U)
+				if(++axis->timer_jogging1khz>=40U)
 				{
 					axis->timer_jogging1khz=0x00U;
-					axis->state = ACCELERATING;
+					axis->ramp_time++;
+					axis->current_speed = SET_SPEED_500HZ + (uint32_t)((axis->accel)*triangle_array[axis->ramp_time]);
+				}
+	        	if(axis->ramp_time>=TIME_RAMPING)
+				{
+	        		axis->ramp_time --;
+	        		axis->timer_jogging1khz=0x00U;
+	        		axis->state = CONSTANT_VEL;
 				}
 			}
 			break;
