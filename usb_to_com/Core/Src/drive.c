@@ -11,6 +11,7 @@
 #include "modbusSlave.h"
 #include "mgr_hmi.h"
 #include"dvr_gpio.h"
+#include "mgr_hmi.h"
 // Mảng chứa 46 giá trị Jerk (đơn vị: Hz/ms^2)
 // Tính theo công thức: (Fmax - 1000) / (200 * 401)
 // với jerk_table[0] tương ứng với Fmax=1000 Hz
@@ -155,8 +156,6 @@ void MC_MoveAbsolute(MC_Axis_t* axis, int32_t pos, uint32_t speed)// mục đíc
 		if(pos >= axis->max_axis) pos= axis->max_axis;
 		if(pos <= 0x00U) pos=0U;// tránh chạm home liên tục sinh ngắt
 		axis->target_pos = pos;
-		axis->target_speed = speed;
-		axis->accel = jerk_table[(speed/(uint32_t)1000)-1] ;// speed là 1k đến 50k
 		// 3. Xác định hướng di chuyển
 		if (axis->target_pos > axis->current_pos) {
 			axis->direction = 0x00; // Chạy tiến
@@ -171,13 +170,18 @@ void MC_MoveAbsolute(MC_Axis_t* axis, int32_t pos, uint32_t speed)// mục đíc
 		{
 			axis->Set_Direction_Pin(axis->direction);
 		}
+		speed = (speed<50000U) ? speed:50000U;
+		speed = (speed>1000U) ? speed:1000U;
+		axis->target_speed = speed;
+		axis->accel = jerk_table[(speed/(uint32_t)1000U)-1] ;// speed là 1k đến 50k
+
 		axis->delta_pos = axis->target_pos > axis->current_pos ? (axis->target_pos - axis->current_pos):(axis->current_pos - axis->target_pos);
 		// 4. Chuyển trạng thái sang Tăng tốc để bộ Handler bắt đầu làm việc
 		axis->state = START_RUN;
 		axis->busy = 0x01U;
 		axis->done = 0x00U;
 	    axis->counter_pos=0x00U;
-	    axis->current_speed=SET_SPEED_1000HZ;
+	    axis->current_speed=SET_SPEED_500HZ;
 	    // CƯỠNG BỨC cập nhật giá trị từ vùng đệm vào thanh ghi thực thi CỦA timer đếm xung
 }
 void Timer_PWM_Chanal_Start(MC_Axis_t* axis)
@@ -190,8 +194,8 @@ void Timer_PWM_Chanal_Start(MC_Axis_t* axis)
 	__HAL_TIM_SET_COMPARE(axis->htim_counter, axis->channel_counter, axis->delta_pos);
 	axis->htim_counter->Instance->EGR = TIM_EGR_UG;
     // set tần só ban đầu của timer phát xung là 15 hz, lúc khởi động coi tần số gần bằng min là 1kHz
-    __HAL_TIM_SET_AUTORELOAD(axis->htim, SET_FREQ_1KHZ);
-    __HAL_TIM_SET_COMPARE(axis->htim, axis->channel, (SET_FREQ_1KHZ/2));
+    __HAL_TIM_SET_AUTORELOAD(axis->htim, SET_SPEED_500HZ);
+    __HAL_TIM_SET_COMPARE(axis->htim, axis->channel, (SET_SPEED_500HZ/2));
 
     axis->htim->Instance->EGR = TIM_EGR_UG;// ép buộc cập nhập giá trị mới vào vùng đệm
 }

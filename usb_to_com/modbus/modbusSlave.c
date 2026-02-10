@@ -23,6 +23,13 @@ Tray2D * Point2D_Tray1 = (Tray2D *)&Holding_Registers_Database[12];
 
 void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint16_t state )
 {
+	if(Get_home_done()==0x00U)
+	{
+		Input_Registers_Database[index]=0x00U;
+		Input_Registers_Database[index + 1]=0x00U;
+		Input_Registers_Database[index + 2]=0x00U;
+		return ;
+	}
 	Input_Registers_Database[index]=toa_do;
 	Input_Registers_Database[index + 1]=toc_do;
 	Input_Registers_Database[index + 2]=state;
