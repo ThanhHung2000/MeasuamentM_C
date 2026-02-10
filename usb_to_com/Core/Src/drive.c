@@ -521,7 +521,7 @@ void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 	{
 		case STATUS_JOGGING_OXIS:// jogging
 		{
-			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),5000U);
+			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),1000U);
 			if(Rotbot_axis[axis].timer_jogging1khz==0x00U) Rotbot_axis[axis].jogging =0x01U;
 		}
 		break;
@@ -529,13 +529,13 @@ void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 		{
 			if(dir==0x00U)
 			{
-				int32_t value = (Rotbot_axis[axis].current_pos > 10U) ? Rotbot_axis[axis].current_pos - 10U : 0x00U;
+				int32_t value = (Rotbot_axis[axis].current_pos > 5U) ? Rotbot_axis[axis].current_pos - 5U : 0x00U;
 
 				MC_MoveAbsolute(&Rotbot_axis[axis],value,5000U);
 			}
 			else
 			{
-				MC_MoveAbsolute(&Rotbot_axis[axis],Rotbot_axis[axis].current_pos + 10U,5000U);
+				MC_MoveAbsolute(&Rotbot_axis[axis],Rotbot_axis[axis].current_pos + 5U,5000U);
 			}
 		}
 		break;

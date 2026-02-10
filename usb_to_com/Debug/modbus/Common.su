@@ -1,0 +1,3 @@
+../modbus/Common.c:10:10:ReadBit	24	static
+../modbus/Common.c:20:6:SetBit	24	static
+../modbus/Common.c:30:6:ClearBit	24	static
