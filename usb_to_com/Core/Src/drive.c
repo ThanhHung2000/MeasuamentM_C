@@ -235,6 +235,17 @@ uint8_t MC_MoveHomeAbsolute(MC_Axis_t* axis)
 	}
 	return 0x01U;
 }
+uint8_t MC_Errow_Axis(MC_Axis_t* axis)
+{
+	if(axis->busy != 0x00U)
+	{
+		__HAL_TIM_SET_COMPARE(axis->htim, axis->channel, 0x00u);
+		axis->htim->Instance->EGR |= TIM_EGR_UG;// ép buộc cập nhập giá trị mới vào vùng đệm
+		axis->ramp_time=0x00U;
+		axis->current_speed = 0x00U;
+	}
+	return 0x01U;
+}
 void Emergency_Stop(void)
 {
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)
@@ -686,7 +697,7 @@ void Rotbot_controler(MC_Axis_t* axis)
         else if ( axis->current_pos == axis->target_pos || axis->ramp_time==0x00U)
         {
             axis->current_speed = 0x00U;
-            axis->state = STANDSTILL;
+            if(axis->state != AXIS_ERROR) axis->state = STANDSTILL;
             axis->done = 0x01U;
             axis->ramp_time=0x00U;
             axis->fulse_stop=0x00U;
@@ -699,6 +710,16 @@ void  MC_Control_Interrupt(void)
 	{
 		Rotbot_controler(&Rotbot_axis[i]);// thay đổi tần số ở đây
 	}
+//	if(Get_State_Sensor(12U)==0x00U) // X
+//	{
+//		Rotbot_axis[0].state=AXIS_ERROR;
+//		MC_Errow_Axis(&Rotbot_axis[0]);
+//	}
+//	if(Get_State_Sensor(13U)==0x00U) //Y
+//	{
+//		Rotbot_axis[1].state=AXIS_ERROR;
+//		MC_Errow_Axis(&Rotbot_axis[1]);
+//	}
 }
 
 uint8_t Set_Direction_OX(uint8_t status)
@@ -719,5 +740,34 @@ uint8_t Set_Direction_OZ(uint8_t status)
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_9, status );
 	return HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_9) > 0x00U ? 0x01U:0x00U;
 }
+uint8_t Reset_Errow_Axis(void)
+{
+	static uint16_t time_delay=0x00U;
+	if(Rotbot_axis[0].state==AXIS_ERROR)
+	{
+		time_delay++;
+		Out_put_Duphong1(0x00);
+		if(time_delay>=3000)
+		{
+			Rotbot_axis[0].state=STANDSTILL;
+			time_delay=0x00U;
+			Out_put_Duphong1(0x01u);
+			return 0x01U;
+		}
+	}
+	if(Rotbot_axis[1].state==AXIS_ERROR)
+	{
+		time_delay++;
+		Out_put_Duphong2(0x00);
+		if(time_delay>=3000)
+		{
+			Rotbot_axis[1].state=STANDSTILL;
+			time_delay=0x00U;
+			Out_put_Duphong2(0x01);
+			return 0x01U;
+		}
+	}
+	return 0x00U;
 
+}
 

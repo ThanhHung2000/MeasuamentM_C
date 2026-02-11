@@ -30,7 +30,7 @@ typedef struct {
 } Axis_Config;
 
 typedef enum {
-    STANDSTILL,      // Đang dừng
+    STANDSTILL =0,      // Đang dừng
 	START_RUN,
     ACCELERATING,    // Đang tăng tốc
     CONSTANT_VEL,    // Chạy tốc độ đều

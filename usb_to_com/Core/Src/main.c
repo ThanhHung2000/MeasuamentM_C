@@ -80,7 +80,7 @@ static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
 uint8_t time_on=0x00;
 /* USER CODE END PFP */
-
+uint8_t a=0x00U;
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
@@ -147,6 +147,7 @@ int main(void)
 			Task_Run_HMI();
 			Task_gpio_output();
 			Task_gpio_input();
+
 		}
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */

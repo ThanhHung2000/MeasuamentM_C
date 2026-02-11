@@ -19,7 +19,10 @@ typedef struct
 	volatile uint8_t Sample_Counter[NUM_SENSORS] ;	// Mảng chứa bộ đếm chống nhiễu cho từng cảm biến
 }Input_state_Sesor;
 uint8_t Get_State_Sensor(uint8_t channel);
+void Out_put_Duphong1(uint8_t status);
+void Out_put_Duphong2(uint8_t status);
 void Gpio_input();
 void Task_gpio_input();
 void Task_gpio_output(void);
+uint8_t Reset_Errow_Axis(void);
 #endif /* INC_DVR_GPIO_H_ */
