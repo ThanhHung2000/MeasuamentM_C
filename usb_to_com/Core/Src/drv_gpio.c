@@ -22,7 +22,8 @@ void Out_put_Duphong7(uint8_t status);
 void Out_put_Duphong8(uint8_t status);
 void Out_put_Duphong9(uint8_t status);
 typedef void (*Gpio_out_handle)(uint8_t);
-
+static uint32_t gpio_output=0x00U;
+static uint32_t gpio_input =0x00U;
 typedef struct {
 	Gpio_out_handle handler;
 } Gpio_out_handle_t;
@@ -111,7 +112,7 @@ void Gpio_input()
 }
 void Task_gpio_input(void)// copy dữ liệu sang địa chỉ 10000
 {
-	uint32_t gpio_input=((uint32_t)Get_home_done()<<18U);
+	gpio_input=((uint32_t)Get_home_done()<<18U);// RESET gpio_input
 	uint8_t busy=Motor_Busy()>0x00U ? 0x01U:0x00U;
 	gpio_input |=(busy<<19U);
 	for (int i = 0; i < NUM_SENSORS; i++)
@@ -121,20 +122,21 @@ void Task_gpio_input(void)// copy dữ liệu sang địa chỉ 10000
 			gpio_input |=1UL<<i;
 		}
 	}
+}
+void Copy_Gpio_Input(void)
+{
 	Set_Inputs_Database(0x00U,(uint8_t)(gpio_input>>0U));
-	//Inputs_Database[0]=(uint8_t)(gpio_input>>0U);
 	Set_Inputs_Database(0x01U,(uint8_t)((uint8_t)(gpio_input>>8U)));
-	//Inputs_Database[1]=(uint8_t)(gpio_input>>8U);
-
 	Set_Inputs_Database(0x02U,(uint8_t)((gpio_input>>16U)&(0x0fU)));
-	//Inputs_Database[2] |= (uint8_t)((gpio_input>>16U)&(0x03U));
-	// gán gpio_input sang mảng Inputs_Database[0] -> 18 bit
+}
+void Copy_data_output(void)
+{
+	 gpio_output = ( (uint32_t)Get_Coild(2) << 0  ) |
+					 ( (uint32_t)Get_Coild(3) << 8  ) |
+					 ( (uint32_t)Get_Coild(4) << 16 ) ;
 }
 void Task_gpio_output(void)// copy dữ liệu sang địa chỉ 10000
 {
-	uint32_t gpio_output = ( (uint32_t)Get_Coild(2) << 0  ) |
-						 ( (uint32_t)Get_Coild(3) << 8  ) |
-						 ( (uint32_t)Get_Coild(4) << 16 ) ;
 	uint8_t state=0x00U;
 	for (int i = 0; i < NUM_SENSORS; i++)
 	{
@@ -144,6 +146,7 @@ void Task_gpio_output(void)// copy dữ liệu sang địa chỉ 10000
 			Gpio_output[i].handler(state);
 		}
 	}
+	gpio_output=0x00U;
 }
 uint8_t Get_State_Sensor(uint8_t channel)
 {

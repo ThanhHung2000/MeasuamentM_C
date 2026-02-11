@@ -127,7 +127,7 @@ int main(void)
   Init_Timer_chanal();
   Robot_Init();
   Delay_SetTimer(TID_TIMER_1ms,1);
-  Delay_SetTimer(TID_TIMER_10ms,10);
+  Delay_SetTimer(TID_TIMER_5ms,5);
   HMI_Init();
   HAL_TIM_Base_Start_IT(&htim7);
   /* USER CODE END 2 */
@@ -143,11 +143,11 @@ int main(void)
 			Task_Run_Home();
 			Task_Run_HMI();
 		}
-		time_on=Delay_GetTimer(TID_TIMER_10ms);// cập nhập giá trị in out lên modbus
+		time_on=Delay_GetTimer(TID_TIMER_5ms);// cập nhập giá trị in out lên modbus
 		{
+			Task_gpio_input();
 			Update_Input();
 			Task_gpio_output();
-			Task_gpio_input();
 		}
     /* USER CODE END WHILE */
 

@@ -23,6 +23,8 @@ void Out_put_Duphong1(uint8_t status);
 void Out_put_Duphong2(uint8_t status);
 void Gpio_input();
 void Task_gpio_input();
+void Copy_Gpio_Input(void);
 void Task_gpio_output(void);
+void Copy_data_output(void);
 uint8_t Reset_Errow_Axis(void);
 #endif /* INC_DVR_GPIO_H_ */

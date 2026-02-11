@@ -731,6 +731,8 @@ void Update_Input(void)
 		Rotbot_axis_target[i].target_position = Get_Holding_Registers(Rotbot_axis[i].indexaxis);
 		Rotbot_axis_target[i].target_speed=     Get_Holding_Registers(Rotbot_axis[i].indexaxis +1);
 	}
+	Copy_data_output();
+	Copy_Gpio_Input();
 	__enable_irq();
 }
 
