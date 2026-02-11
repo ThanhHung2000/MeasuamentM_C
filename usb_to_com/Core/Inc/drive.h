@@ -29,7 +29,7 @@ typedef struct {
     float acceleration;      // Gia tốc tính toán được
 } Axis_Config;
 
-typedef enum {
+typedef enum __attribute__((packed)) {
     STANDSTILL =0,      // Đang dừng
 	START_RUN,
     ACCELERATING,    // Đang tăng tốc
@@ -94,7 +94,6 @@ void Interrup_gpio_OZ(void);
 uint8_t Motor_Busy(void);
 void Copy_target_fromPC(void);
 extern Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT];
-void Update_Input(uint16_t *test);
 //uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz,float freq_max );
 
 //void MC_MoveHandle(uint8_t axis,uint8_t status, int dir);

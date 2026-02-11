@@ -36,6 +36,7 @@ const float triangle_array[TIME_RAMPING] = {
 uint8_t Set_Direction_OX(uint8_t status);
 uint8_t Set_Direction_OY(uint8_t status);
 uint8_t Set_Direction_OZ(uint8_t status);
+void Update_Input(MC_Axis_t* axis);
 static MC_Axis_t Rotbot_axis[NUM_AXIT_ROBOT];
 Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT]={0,};
 void Init_Timer_chanal(void)
@@ -320,7 +321,7 @@ void Interrup_gpio(uint16_t GPIO_Pin)// kích hoạt ngắt ngoài khi về home
 }
 uint8_t Motor_Busy(void)// kiểm tra xem 3 trục robot có đã goàn toàn dừng lại chưa
 {
-	return (Rotbot_axis[0].busy || Rotbot_axis[1].busy || Rotbot_axis[2].busy) ;;
+	return (Rotbot_axis[0].busy || Rotbot_axis[1].busy || Rotbot_axis[2].busy) ;
 }
 uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 {
@@ -565,6 +566,8 @@ void Rotbot_controler(MC_Axis_t* axis)
 {
 	int32_t curent_counter=0x00U;
 	uint32_t new_arr=0x00U;
+	uint16_t run_time=0x00U;
+	run_time++;
     switch (axis->state)
     {
 		case START_RUN:
@@ -703,15 +706,13 @@ void Rotbot_controler(MC_Axis_t* axis)
             axis->ramp_time=0x00U;
             axis->fulse_stop=0x00U;
         }
+        Update_Input(axis);
     }
 }
-void Update_Input(uint16_t *test)
+void Update_Input(MC_Axis_t* axis)
 {
-	for(int i=0;i<NUM_AXIT_ROBOT;i++)
-	{
-		Update_Input_Register(Rotbot_axis[i].indexaxis ,(uint16_t)Rotbot_axis[i].current_pos, (uint16_t)Rotbot_axis[i].current_speed , (uint16_t)Rotbot_axis[i].state);
-	}
-	Set_Input_Register(10U,*test);
+
+	Update_Input_Register(axis->indexaxis ,(uint16_t)axis->current_pos, (uint16_t)axis->current_speed , (uint16_t)axis->state );
 }
 
 void  MC_Control_Interrupt(void)

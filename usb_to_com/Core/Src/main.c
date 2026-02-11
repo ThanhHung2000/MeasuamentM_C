@@ -144,11 +144,8 @@ int main(void)
 			Task_Run_HMI();
 			Task_gpio_output();
 			Task_gpio_input();
-			Update_Input(&test_real_time);
-			if(++test_real_time>=65535) test_real_time=0x00U;
 		}
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

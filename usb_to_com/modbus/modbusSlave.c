@@ -13,10 +13,10 @@ extern uint8_t RxData[256];
 extern uint8_t TxData[256];
 extern UART_HandleTypeDef huart2;
 
-static uint16_t Holding_Registers_Database[50]={0,};
-static uint8_t Coils_Database[50]={0,};
-static uint8_t Inputs_Database[50]  = {0,};
-static uint16_t Input_Registers_Database[50]={0,};
+static volatile uint16_t Holding_Registers_Database[50]={0,};
+static volatile uint8_t Coils_Database[50]={0,};
+static volatile uint8_t Inputs_Database[50]  = {0,};
+static volatile uint16_t Input_Registers_Database[50]={0,};
 
 Tab_Control_t* Main_controler = (Tab_Control_t*)&Coils_Database[0];
 Control_motor_t* Control_motor = (Control_motor_t*)&Coils_Database[1];
@@ -32,7 +32,11 @@ void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint1
 	}
 	Input_Registers_Database[index]=toa_do;
 	Input_Registers_Database[index + 1]=toc_do;
-	Input_Registers_Database[index + 2]=state;
+	if(Input_Registers_Database[index + 2] != state)
+	{
+		Input_Registers_Database[index + 2]=state;
+	}
+
 }
 void Set_Input_Register(uint8_t index, uint16_t data)
 {
