@@ -148,6 +148,7 @@ int main(void)
 			Task_gpio_input();
 			Update_Input();
 			Task_gpio_output();
+			Task_Main_Controler();
 		}
     /* USER CODE END WHILE */
 

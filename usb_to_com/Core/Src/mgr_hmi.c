@@ -170,7 +170,11 @@ void Task_Run_HMI(void)
 		}
 		return;
 	}
-	if(home==0x01U) return;
+	Task_Move_Oxis();
+}
+void Task_Main_Controler(void)
+{
+	if(home==0x01U || Emergency == 0x01U) return;
 	uint8_t current_main = Main_controler->all;
 	fisrtbit = __builtin_ffs(current_main)-1;
 	if(fisrtbit >= 0)
@@ -181,7 +185,6 @@ void Task_Run_HMI(void)
 		}
 
 	}
-	Task_Move_Oxis();
 }
 // Giả sử P1, P2, P3 và dX, dY, Angle đã được tính ở bước Calibration
 Point2D Get_Target_Zigzag(int hang, int cot) {

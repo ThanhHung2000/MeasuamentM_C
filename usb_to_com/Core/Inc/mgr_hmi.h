@@ -14,6 +14,7 @@
 #define NUM_BUTTON_HOLD      0x06U
 #define NUM_BUTTON_MAIN      0x07U
 void Task_Run_HMI(void);
+void Task_Main_Controler(void);
 void Task_Run_Home(void);
 void Init_hmi(void);
 void Set_Emergency_Stop();
