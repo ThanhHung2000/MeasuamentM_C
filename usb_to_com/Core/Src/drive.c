@@ -13,6 +13,7 @@
 #include"dvr_gpio.h"
 #include "mgr_hmi.h"
 #include "modbusSlave.h"
+extern volatile uint16_t Input_Registers_Database[50];
 // Mảng chứa 46 giá trị Jerk (đơn vị: Hz/ms^2)
 // Tính theo công thức: (Fmax - 1000) / (200 * 401)
 // với jerk_table[0] tương ứng với Fmax=1000 Hz
@@ -89,6 +90,10 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_X_ROBOT].Set_Direction_Pin=Set_Direction_OX;
 	Rotbot_axis[AXIT_X_ROBOT].max_axis=MAX_Axis_OX;//&Rotbot_axis_target[AXIT_X_ROBOT].max_limit;
 	Rotbot_axis[AXIT_X_ROBOT].indexaxis=0x00U;
+
+	Rotbot_axis[AXIT_X_ROBOT].current_pos_shodow =&Input_Registers_Database[0];
+	Rotbot_axis[AXIT_X_ROBOT].current_speed_shadow =&Input_Registers_Database[1];
+	Rotbot_axis[AXIT_X_ROBOT].axis_busy_shadow =&Input_Registers_Database[2];
 	// TRỤC Y
 	Rotbot_axis[AXIT_Y_ROBOT].htim= &htim3;
 	Rotbot_axis[AXIT_Y_ROBOT].htim_counter= &htim5;
@@ -97,6 +102,10 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_Y_ROBOT].Set_Direction_Pin=Set_Direction_OY;
 	Rotbot_axis[AXIT_Y_ROBOT].max_axis=MAX_Axis_OY;//&Rotbot_axis_target[AXIT_Y_ROBOT].max_limit;
 	Rotbot_axis[AXIT_Y_ROBOT].indexaxis=0x03U;
+
+	Rotbot_axis[AXIT_Y_ROBOT].current_pos_shodow =&Input_Registers_Database[3];
+	Rotbot_axis[AXIT_Y_ROBOT].current_speed_shadow =&Input_Registers_Database[4];
+	Rotbot_axis[AXIT_Y_ROBOT].axis_busy_shadow =&Input_Registers_Database[5];
 	// TRỤC Z
 	Rotbot_axis[AXIT_Z_ROBOT].htim= &htim8;
 	Rotbot_axis[AXIT_Z_ROBOT].htim_counter= &htim4;
@@ -105,6 +114,9 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_Z_ROBOT].Set_Direction_Pin=Set_Direction_OZ;
 	Rotbot_axis[AXIT_Z_ROBOT].max_axis=MAX_Axis_OZ;//&Rotbot_axis_target[AXIT_Z_ROBOT].max_limit;
 	Rotbot_axis[AXIT_Z_ROBOT].indexaxis=0x06U;
+	Rotbot_axis[AXIT_Z_ROBOT].current_pos_shodow =&Input_Registers_Database[6];
+	Rotbot_axis[AXIT_Z_ROBOT].current_speed_shadow =&Input_Registers_Database[7];
+	Rotbot_axis[AXIT_Z_ROBOT].axis_busy_shadow =&Input_Registers_Database[8];
 	Reset_position();
 }
 // MC_Axis_t quản lý thông số của truc x,y, cụ thể
@@ -183,7 +195,6 @@ void MC_MoveAbsolute(MC_Axis_t* axis, int32_t pos, uint32_t speed)// mục đíc
 		axis->done = 0x00U;
 	    axis->counter_pos=0x00U;
 	    axis->current_speed=SET_SPEED_500HZ;
-	    axis->axis_busy =0x01U;
 	    // CƯỠNG BỨC cập nhật giá trị từ vùng đệm vào thanh ghi thực thi CỦA timer đếm xung
 }
 void Timer_PWM_Chanal_Start(MC_Axis_t* axis)
@@ -711,11 +722,16 @@ void Rotbot_controler(MC_Axis_t* axis)
 
 void Update_Input(void)
 {
+	__disable_irq();
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)
 	{
-		if(Rotbot_axis[i].busy == 0x00U) Rotbot_axis[i].axis_busy=0x00U;
-		Update_Input_Register(Rotbot_axis[i].indexaxis ,(uint16_t)Rotbot_axis[i].current_pos, (uint16_t)Rotbot_axis[i].current_speed , (uint16_t)Rotbot_axis[i].axis_busy );
+		*Rotbot_axis[i].current_pos_shodow = (uint16_t)Rotbot_axis[i].current_pos;
+		*Rotbot_axis[i].current_speed_shadow = (uint16_t)Rotbot_axis[i].current_speed;
+		*Rotbot_axis[i].axis_busy_shadow = (uint16_t)Rotbot_axis[i].busy;
+		Rotbot_axis_target[i].target_position = Get_Holding_Registers(Rotbot_axis[i].indexaxis);
+		Rotbot_axis_target[i].target_speed=     Get_Holding_Registers(Rotbot_axis[i].indexaxis +1);
 	}
+	__enable_irq();
 }
 
 void  MC_Control_Interrupt(void)

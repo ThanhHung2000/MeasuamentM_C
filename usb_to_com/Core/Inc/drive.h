@@ -47,7 +47,7 @@ typedef struct {
     uint32_t channel_counter;
     uint8_t (* Set_Direction_Pin)(uint8_t);
     // Thông số chuyển động
-    int32_t current_pos;   // Vị trí hiện tại (số xung)
+    volatile int32_t current_pos;   // Vị trí hiện tại (số xung)
     volatile int32_t target_pos;    // Vị trí đích
     volatile int32_t delta_pos;
     volatile uint32_t counter_pos;
@@ -60,7 +60,7 @@ typedef struct {
     volatile int32_t ramp_time;   // Bước tính toán ramp
     volatile uint32_t fulse_stop;   // Bước tính toán ramp
     // Các cờ trạng thái giống PLC
-    volatile uint8_t busy;    // Bằng 1 khi lệnh đang thực thi (tăng tốc, chạy đều hoặc giảm tốc)
+    volatile uint16_t busy;    // Bằng 1 khi lệnh đang thực thi (tăng tốc, chạy đều hoặc giảm tốc)
 	uint8_t done;    // Bằng 1 trong 1 chu kỳ khi đã đến đúng vị trí đích
 	uint8_t error;   // Bằng 1 khi trục gặp sự cố
 	uint8_t active;  // Bằng 1 khi trục đang có quyền điều khiển hardware
@@ -69,12 +69,14 @@ typedef struct {
 	volatile uint8_t homing;
 	volatile uint8_t jogging;
 	uint16_t timer_jogging1khz;
-	volatile uint16_t axis_busy;
+
+	volatile uint16_t *axis_busy_shadow;
+	volatile uint16_t *current_pos_shodow;
+	volatile uint16_t *current_speed_shadow;
 } MC_Axis_t;
 typedef struct {
-    float target_position;    // Tọa độ mục tiêu (ví dụ: mm hoặc độ)
-    float target_speed;       // Tốc độ mục tiêu (ví dụ: mm/s)
-    int32_t max_limit;          // Giới hạn phần mềm tối đa (Soft Limit Max)
+    uint16_t target_position;    // Tọa độ mục tiêu (ví dụ: mm hoặc độ)
+    uint16_t target_speed;       // Tốc độ mục tiêu (ví dụ: mm/s)
 } Axis_Config_t;
 
 void Init_Timer_chanal(void);

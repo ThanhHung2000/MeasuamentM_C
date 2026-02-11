@@ -16,7 +16,7 @@ extern UART_HandleTypeDef huart2;
 static volatile uint16_t Holding_Registers_Database[50]={0,};
 static volatile uint8_t Coils_Database[50]={0,};
 static volatile uint8_t Inputs_Database[50]  = {0,};
-static volatile uint16_t Input_Registers_Database[50]={0,};
+volatile uint16_t Input_Registers_Database[50]={0,};
 
 Tab_Control_t* Main_controler = (Tab_Control_t*)&Coils_Database[0];
 Control_motor_t* Control_motor = (Control_motor_t*)&Coils_Database[1];

@@ -127,7 +127,7 @@ int main(void)
   Init_Timer_chanal();
   Robot_Init();
   Delay_SetTimer(TID_TIMER_1ms,1);
-  Delay_SetTimer(TID_TIMER_1000ms,5000);
+  Delay_SetTimer(TID_TIMER_10ms,10);
   HMI_Init();
   HAL_TIM_Base_Start_IT(&htim7);
   /* USER CODE END 2 */
@@ -142,11 +142,15 @@ int main(void)
 		{
 			Task_Run_Home();
 			Task_Run_HMI();
-			Task_gpio_output();
-			Task_gpio_input();
 			Update_Input();
 		}
+		time_on=Delay_GetTimer(TID_TIMER_10ms);// cập nhập giá trị in out lên modbus
+		{
+			Task_gpio_output();
+			Task_gpio_input();
+		}
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -686,7 +690,7 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA1_Stream5_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 
 }

@@ -155,7 +155,6 @@ void Set_Emergency_Stop()
 void Task_Run_HMI(void)
 {
 	static uint8_t timer_Emergency_off=0x00U;
-	Copy_target_fromPC();
 	if(Emergency == 0x01U )
 	{
 		Emergency_Stop();
