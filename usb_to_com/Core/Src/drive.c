@@ -683,6 +683,7 @@ void Rotbot_controler(MC_Axis_t* axis)
         	axis->current_pos -=axis->offset;
         }
         axis->offset=0x00U;
+        //Update_Input(*test); // chuyển update ở main 1ms
         axis->counter_pos = curent_counter;
         if(axis->done == 0x01U)
         {
