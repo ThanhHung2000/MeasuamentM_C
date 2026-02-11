@@ -35,9 +35,8 @@ typedef enum {
     ACCELERATING,    // Đang tăng tốc
     CONSTANT_VEL,    // Chạy tốc độ đều
     DECELERATING,    // Đang giảm tốc
-	HOME_STOPPING,
-    POSITION_REACHED, // Đã đến đích
 	AXIS_ERROR,        // TRẠNG THÁI LỖI (Cần Reset mới chạy lại được)
+	HOME_STOPPING,
 	JOGGING_RUN
 } AxisState;
 typedef struct {

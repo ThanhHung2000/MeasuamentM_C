@@ -2,6 +2,7 @@
 #include"dvr_gpio.h"
 #include "modbusSlave.h"
 #include "mgr_hmi.h"
+#include "drive.h"
 void Out_put_Xilanh1(uint8_t status);
 void Out_put_Xilanh2(uint8_t status);
 void Out_put_Vacum_hut1(uint8_t status);
@@ -111,6 +112,8 @@ void Gpio_input()
 void Task_gpio_input(void)// copy dữ liệu sang địa chỉ 10000
 {
 	uint32_t gpio_input=((uint32_t)Get_home_done()<<18U);
+	uint8_t busy=Motor_Busy()>0x00U ? 0x01U:0x00U;
+	gpio_input |=(busy<<19U);
 	for (int i = 0; i < NUM_SENSORS; i++)
 	{
 		if(sensor.Sensor_State[i])
