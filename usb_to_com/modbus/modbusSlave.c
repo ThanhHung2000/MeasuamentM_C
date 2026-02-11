@@ -21,8 +21,7 @@ static uint16_t Input_Registers_Database[50]={0,};
 Tab_Control_t* Main_controler = (Tab_Control_t*)&Coils_Database[0];
 Control_motor_t* Control_motor = (Control_motor_t*)&Coils_Database[1];
 Tray2D * Point2D_Tray1 = (Tray2D *)&Holding_Registers_Database[12];
-
-void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint16_t state )
+void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint16_t state)
 {
 	if(Get_home_done()==0x00U)
 	{

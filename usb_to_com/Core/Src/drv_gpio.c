@@ -126,7 +126,7 @@ void Task_gpio_input(void)// copy dữ liệu sang địa chỉ 10000
 	Set_Inputs_Database(0x01U,(uint8_t)((uint8_t)(gpio_input>>8U)));
 	//Inputs_Database[1]=(uint8_t)(gpio_input>>8U);
 
-	Set_Inputs_Database(0x02U,(uint8_t)((gpio_input>>16U)&(0x04U)));
+	Set_Inputs_Database(0x02U,(uint8_t)((gpio_input>>16U)&(0x0fU)));
 	//Inputs_Database[2] |= (uint8_t)((gpio_input>>16U)&(0x03U));
 	// gán gpio_input sang mảng Inputs_Database[0] -> 18 bit
 }

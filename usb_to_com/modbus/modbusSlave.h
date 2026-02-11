@@ -33,8 +33,9 @@ uint16_t Get_Holding_Registers(uint8_t index);
 uint8_t Get_Coild(uint8_t index);
 void Set_Inputs_Database(uint8_t index,uint8_t data);
 void Copy_Holding_Registers(uint8_t index,uint8_t index_coppy);
-void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint16_t state );
+//void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint16_t state, uint16_t test);
 void Set_Input_Register(uint8_t index, uint16_t data);
+void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint16_t state);
 void Reset_Tray(uint8_t index);
 void Reset_Oxis(void);
 #endif /* INC_MODBUSSLAVE_H_ */

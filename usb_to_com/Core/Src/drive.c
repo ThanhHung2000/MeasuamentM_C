@@ -12,6 +12,7 @@
 #include "mgr_hmi.h"
 #include"dvr_gpio.h"
 #include "mgr_hmi.h"
+#include "modbusSlave.h"
 // Mảng chứa 46 giá trị Jerk (đơn vị: Hz/ms^2)
 // Tính theo công thức: (Fmax - 1000) / (200 * 401)
 // với jerk_table[0] tương ứng với Fmax=1000 Hz
@@ -682,7 +683,6 @@ void Rotbot_controler(MC_Axis_t* axis)
         	axis->current_pos -=axis->offset;
         }
         axis->offset=0x00U;
-        Update_Input_Register(axis->indexaxis,axis->current_pos,axis->current_speed,(uint16_t)axis->state);
         axis->counter_pos = curent_counter;
         if(axis->done == 0x01U)
         {
@@ -704,6 +704,15 @@ void Rotbot_controler(MC_Axis_t* axis)
         }
     }
 }
+void Update_Input(uint16_t *test)
+{
+	for(int i=0;i<NUM_AXIT_ROBOT;i++)
+	{
+		Update_Input_Register(Rotbot_axis[i].indexaxis ,(uint16_t)Rotbot_axis[i].current_pos, (uint16_t)Rotbot_axis[i].current_speed , (uint16_t)Rotbot_axis[i].state);
+	}
+	Set_Input_Register(10U,*test);
+}
+
 void  MC_Control_Interrupt(void)
 {
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)
