@@ -36,7 +36,6 @@ const float triangle_array[TIME_RAMPING] = {
 uint8_t Set_Direction_OX(uint8_t status);
 uint8_t Set_Direction_OY(uint8_t status);
 uint8_t Set_Direction_OZ(uint8_t status);
-void Update_Input(MC_Axis_t* axis);
 static MC_Axis_t Rotbot_axis[NUM_AXIT_ROBOT];
 Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT]={0,};
 void Init_Timer_chanal(void)
@@ -184,6 +183,7 @@ void MC_MoveAbsolute(MC_Axis_t* axis, int32_t pos, uint32_t speed)// mục đíc
 		axis->done = 0x00U;
 	    axis->counter_pos=0x00U;
 	    axis->current_speed=SET_SPEED_500HZ;
+	    axis->axis_busy =0x01U;
 	    // CƯỠNG BỨC cập nhật giá trị từ vùng đệm vào thanh ghi thực thi CỦA timer đếm xung
 }
 void Timer_PWM_Chanal_Start(MC_Axis_t* axis)
@@ -706,13 +706,16 @@ void Rotbot_controler(MC_Axis_t* axis)
             axis->ramp_time=0x00U;
             axis->fulse_stop=0x00U;
         }
-        Update_Input(axis);
     }
 }
-void Update_Input(MC_Axis_t* axis)
-{
 
-	Update_Input_Register(axis->indexaxis ,(uint16_t)axis->current_pos, (uint16_t)axis->current_speed , (uint16_t)axis->state );
+void Update_Input(void)
+{
+	for(int i=0;i<NUM_AXIT_ROBOT;i++)
+	{
+		if(Rotbot_axis[i].busy == 0x00U) Rotbot_axis[i].axis_busy=0x00U;
+		Update_Input_Register(Rotbot_axis[i].indexaxis ,(uint16_t)Rotbot_axis[i].current_pos, (uint16_t)Rotbot_axis[i].current_speed , (uint16_t)Rotbot_axis[i].axis_busy );
+	}
 }
 
 void  MC_Control_Interrupt(void)

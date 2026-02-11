@@ -69,8 +69,7 @@ typedef struct {
 	volatile uint8_t homing;
 	volatile uint8_t jogging;
 	uint16_t timer_jogging1khz;
-
-
+	volatile uint16_t axis_busy;
 } MC_Axis_t;
 typedef struct {
     float target_position;    // Tọa độ mục tiêu (ví dụ: mm hoặc độ)
@@ -93,6 +92,7 @@ void Interrup_gpio_OY(void);
 void Interrup_gpio_OZ(void);
 uint8_t Motor_Busy(void);
 void Copy_target_fromPC(void);
+void Update_Input(void);
 extern Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT];
 //uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz,float freq_max );
 

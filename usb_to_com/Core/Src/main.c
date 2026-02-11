@@ -144,6 +144,7 @@ int main(void)
 			Task_Run_HMI();
 			Task_gpio_output();
 			Task_gpio_input();
+			Update_Input();
 		}
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
