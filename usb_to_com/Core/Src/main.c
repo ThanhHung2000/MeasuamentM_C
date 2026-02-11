@@ -142,10 +142,10 @@ int main(void)
 		{
 			Task_Run_Home();
 			Task_Run_HMI();
-			Update_Input();
 		}
 		time_on=Delay_GetTimer(TID_TIMER_10ms);// cập nhập giá trị in out lên modbus
 		{
+			Update_Input();
 			Task_gpio_output();
 			Task_gpio_input();
 		}
