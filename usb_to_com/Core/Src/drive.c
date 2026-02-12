@@ -700,8 +700,8 @@ void Rotbot_controler(MC_Axis_t* axis)
         }
         axis->offset=0x00U;
         //Update_Input(*test); // chuyển update ở main 1ms
-		*axis->current_pos_shodow = (uint16_t)axis->current_pos;
-		*axis->current_speed_shadow = (uint16_t)axis->current_speed;
+//		*axis->current_pos_shodow = (uint16_t)axis->current_pos;
+//		*axis->current_speed_shadow = (uint16_t)axis->current_speed;
 
         axis->counter_pos = curent_counter;
         if(axis->done == 0x01U)
@@ -742,6 +742,9 @@ void Update_state_MC(void)
 	__disable_irq();
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)
 	{
+
+		*Rotbot_axis[i].current_pos_shodow = (uint16_t)Rotbot_axis[i].current_pos;
+		*Rotbot_axis[i].current_speed_shadow = (uint16_t)Rotbot_axis[i].current_speed;
 		*Rotbot_axis[i].axis_busy_shadow = (uint16_t)Rotbot_axis[i].busy;
 	}
 	__enable_irq();

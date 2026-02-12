@@ -315,6 +315,7 @@ void Scanning_Task(void)
 }
 void Task_Run_Home(void)
 {
+	if(Emergency == 0x01U) return;
 	Gpio_input();
 	if(home!=0x00u)
 	{
