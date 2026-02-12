@@ -368,12 +368,14 @@ void Handle_Down(uint8_t data)
 
 void Handle_Set(void)
 {
-	if(Get_home_done()==0x00U || Get_Go_home()!=0x00U) return ;//home!=0x00u
+	if(Get_home_done()==0x00U) return ;//home!=0x00u
+	Copy_Data_Target();
 	// lấy dữ liệu từ 4x Holding_Registers_Database để làm target
-	if(MC_MoveLinear(Rotbot_axis_target[0].target_position,Rotbot_axis_target[1].target_position,Rotbot_axis_target[2].target_position))
+	if(MC_MoveLinear(Rotbot_axis_target[0].target_position,Rotbot_axis_target[1].target_position,Rotbot_axis_target[2].target_position)==0x00U)
 	{
 		Main_controler->bits.SetPoint=0x00U;
 	}
+
 }
 void Handle_Home(void)
 {

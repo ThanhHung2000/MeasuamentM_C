@@ -138,15 +138,16 @@ int main(void)
 		time_on=Delay_GetTimer(TID_TIMER_1ms);
 		if(time_on==0x01)
 		{
+			Task_Main_Controler();
 			Task_Run_Home();
 			Task_Run_HMI();
+			Update_state_MC();
 		}
 		time_on=Delay_GetTimer(TID_TIMER_2ms);// cập nhập giá trị in out lên modbus
 		{
 			Task_gpio_input();
 			Update_Input();
 			Task_gpio_output();
-			Task_Main_Controler();
 		}
     /* USER CODE END WHILE */
 
