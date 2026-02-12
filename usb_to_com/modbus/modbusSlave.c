@@ -310,7 +310,7 @@ uint8_t readInputs (void)
 uint8_t writeHoldingRegs (void)
 {
 	uint16_t startAddr = ((RxData[2]<<8)|RxData[3]);  // start Register Address
-    uint8_t indx = 7;  // we need to keep track of index in RxData
+    uint8_t index = 7U;  // we need to keep track of index in RxData
 	uint16_t numRegs = ((RxData[4]<<8)|RxData[5]);   // number to registers master has requested
 	if ((numRegs<1)||(numRegs>123))  // maximum no. of Registers as per the PDF
 	{
@@ -330,11 +330,15 @@ uint8_t writeHoldingRegs (void)
 	 * 16 bit Data = firstByte<<8|secondByte
 	 */
 
-	for (int i=0; i<numRegs; i++)
+//	for (int i=0; i<numRegs; i++)
+//	{
+//		Holding_Registers_Database[startAddr++] = (RxData[index++]<<8)|RxData[index++];
+//	}
+	for (int i = 0; i < numRegs; i++)
 	{
-		Holding_Registers_Database[startAddr++] = (RxData[indx++]<<8)|RxData[indx++];
+	    Holding_Registers_Database[startAddr++] = (RxData[index] << 8) | RxData[index + 1];
+	    index += 2; // Tăng index lên 2 đơn vị sau khi đã dùng xong cho cả 2 byte
 	}
-
 	// Prepare Response
 
 	//| SLAVE_ID | FUNCTION_CODE | Start Addr | num of Regs    | CRC     |

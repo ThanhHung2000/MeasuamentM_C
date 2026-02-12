@@ -93,7 +93,7 @@ void Interrup_gpio_OX(void);
 void Interrup_gpio_OY(void);
 void Interrup_gpio_OZ(void);
 uint8_t Motor_Busy(void);
-void Copy_target_fromPC(void);
+//void Copy_target_fromPC(void);
 void Update_Input(void);
 extern Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT];
 //uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz,float freq_max );

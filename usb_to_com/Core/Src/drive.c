@@ -55,14 +55,14 @@ void Init_Timer_chanal(void)
 	__HAL_TIM_SET_COUNTER(&htim3, 0);
 	__HAL_TIM_SET_COUNTER(&htim1, 0);
 }
-void Copy_target_fromPC(void)
-{
-	for(int i=0;i<NUM_AXIT_ROBOT;i++)
-	{
-		Rotbot_axis_target[i].target_position = Get_Holding_Registers(Rotbot_axis[i].indexaxis);
-		Rotbot_axis_target[i].target_speed=     Get_Holding_Registers(Rotbot_axis[i].indexaxis +1);
-	}
-}
+//void Copy_target_fromPC(void)
+//{
+//	for(int i=0;i<NUM_AXIT_ROBOT;i++)
+//	{
+//		Rotbot_axis_target[i].target_position = Get_Holding_Registers(Rotbot_axis[i].indexaxis);
+//		Rotbot_axis_target[i].target_speed=     Get_Holding_Registers(Rotbot_axis[i].indexaxis +1);
+//	}
+//}
 void Reset_position(void)
 {
 	for(int i=0x00U;i<NUM_AXIT_ROBOT;i++)
@@ -722,15 +722,17 @@ void Rotbot_controler(MC_Axis_t* axis)
 
 void Update_Input(void)
 {
-	if(Get_Go_home()) return;
 	__disable_irq();
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)
 	{
 		*Rotbot_axis[i].current_pos_shodow = (uint16_t)Rotbot_axis[i].current_pos;
 		*Rotbot_axis[i].current_speed_shadow = (uint16_t)Rotbot_axis[i].current_speed;
-		*Rotbot_axis[i].axis_busy_shadow = (uint16_t)Rotbot_axis[i].state;
-		Rotbot_axis_target[i].target_position = Get_Holding_Registers(Rotbot_axis[i].indexaxis);
-		Rotbot_axis_target[i].target_speed=     Get_Holding_Registers(Rotbot_axis[i].indexaxis +1);
+		*Rotbot_axis[i].axis_busy_shadow = (uint16_t)Rotbot_axis[i].busy;
+		if(Get_Go_home()==0x00U)
+		{
+			Rotbot_axis_target[i].target_position = Get_Holding_Registers(Rotbot_axis[i].indexaxis);
+			Rotbot_axis_target[i].target_speed=     Get_Holding_Registers(Rotbot_axis[i].indexaxis +1);
+		}
 	}
 	Copy_data_output();
 	Copy_Gpio_Input();
