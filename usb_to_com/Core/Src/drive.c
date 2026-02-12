@@ -722,12 +722,13 @@ void Rotbot_controler(MC_Axis_t* axis)
 
 void Update_Input(void)
 {
+	if(Get_Go_home()) return;
 	__disable_irq();
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)
 	{
 		*Rotbot_axis[i].current_pos_shodow = (uint16_t)Rotbot_axis[i].current_pos;
 		*Rotbot_axis[i].current_speed_shadow = (uint16_t)Rotbot_axis[i].current_speed;
-		*Rotbot_axis[i].axis_busy_shadow = (uint16_t)Rotbot_axis[i].busy;
+		*Rotbot_axis[i].axis_busy_shadow = (uint16_t)Rotbot_axis[i].state;
 		Rotbot_axis_target[i].target_position = Get_Holding_Registers(Rotbot_axis[i].indexaxis);
 		Rotbot_axis_target[i].target_speed=     Get_Holding_Registers(Rotbot_axis[i].indexaxis +1);
 	}

@@ -13,7 +13,7 @@
 #define CY_SCB_SPI_ETH_H
 
 #define TID_TIMER_1ms        0
-#define TID_TIMER_5ms        1
+#define TID_TIMER_2ms        1
 #define TID_TIMER_500ms      2
 #define TID_TIMER_1000ms     3
 #define TID_TIMER_3000ms     4

@@ -126,8 +126,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   Init_Timer_chanal();
   Robot_Init();
-  Delay_SetTimer(TID_TIMER_1ms,1);
-  Delay_SetTimer(TID_TIMER_5ms,5);
+  Delay_SetTimer(TID_TIMER_1ms,0x01U);
+  Delay_SetTimer(TID_TIMER_2ms,0x02U);
   HMI_Init();
   HAL_TIM_Base_Start_IT(&htim7);
   /* USER CODE END 2 */
@@ -143,7 +143,7 @@ int main(void)
 			Task_Run_Home();
 			Task_Run_HMI();
 		}
-		time_on=Delay_GetTimer(TID_TIMER_5ms);// cập nhập giá trị in out lên modbus
+		time_on=Delay_GetTimer(TID_TIMER_2ms);// cập nhập giá trị in out lên modbus
 		{
 			Task_gpio_input();
 			Update_Input();
@@ -784,14 +784,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = DIR_TIM3_Pin|DIR_TIM8_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : DIR_TIM1_Pin */
   GPIO_InitStruct.Pin = DIR_TIM1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(DIR_TIM1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : DIR_NO_Pin */
