@@ -9,6 +9,7 @@
 #include "string.h"
 #include "RS232.h"
 #include "mgr_hmi.h"
+#define LENG_MODBUS_DATA 50U
 extern uint8_t RxData[256];
 extern uint8_t TxData[256];
 extern UART_HandleTypeDef huart2;
@@ -319,7 +320,7 @@ uint8_t writeHoldingRegs (void)
 	}
 
 	uint16_t endAddr = startAddr+numRegs-1;  // end Register
-	if (endAddr>49)  // end Register can not be more than 49 as we only have record of 50 Registers in total
+	if (endAddr>LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
 	{
 		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
