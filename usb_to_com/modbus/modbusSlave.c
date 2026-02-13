@@ -9,15 +9,15 @@
 #include "string.h"
 #include "RS232.h"
 #include "mgr_hmi.h"
-#define LENG_MODBUS_DATA 50U
+#define LENG_MODBUS_DATA 0x0FU
 extern uint8_t RxData[256];
 extern uint8_t TxData[256];
 extern UART_HandleTypeDef huart2;
 
-static volatile uint16_t Holding_Registers_Database[50]={0,};
-static volatile uint8_t Coils_Database[50]={0,};
-static volatile uint8_t Inputs_Database[50]  = {0,};
-volatile uint16_t Input_Registers_Database[50]={0,};
+static volatile uint16_t Holding_Registers_Database[LENG_MODBUS_DATA]={0,};
+static volatile uint8_t Coils_Database[LENG_MODBUS_DATA]={0,};
+static volatile uint8_t Inputs_Database[LENG_MODBUS_DATA]  = {0,};
+volatile uint16_t Input_Registers_Database[LENG_MODBUS_DATA]={0,};
 
 Tab_Control_t* Main_controler = (Tab_Control_t*)&Coils_Database[0];
 Control_motor_t* Control_motor = (Control_motor_t*)&Coils_Database[1];
@@ -110,7 +110,7 @@ uint8_t readHoldingRegs (void)
 	}
 
 	uint16_t endAddr = startAddr+numRegs-1;  // end Register
-	if (endAddr>49)  // end Register can not be more than 49 as we only have record of 50 Registers in total
+	if (endAddr>LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
 	{
 		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
@@ -149,7 +149,7 @@ uint8_t readInputRegs (void)
 	}
 
 	uint16_t endAddr = startAddr+numRegs-1;  // end Register
-	if (endAddr>49)  // end Register can not be more than 49 as we only have record of 50 Registers in total
+	if (endAddr>LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
 	{
 		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
@@ -188,7 +188,7 @@ uint8_t readCoils (void)
 	}
 
 	uint16_t endAddr = startAddr+numCoils-1;  // Last coils address
-	if (endAddr>499)  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
+	if (endAddr>(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
 	{
 		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
@@ -254,7 +254,7 @@ uint8_t readInputs (void)
 	}
 
 	uint16_t endAddr = startAddr+numCoils-1;  // Last coils address
-	if (endAddr>599)  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
+	if (endAddr>(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
 	{
 		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
@@ -392,7 +392,7 @@ uint8_t writeSingleCoil (void)
 {
 	uint16_t startAddr = ((RxData[2]<<8)|RxData[3]);  // start Coil Address
 
-	if (startAddr>499)  // The Coil Address can not be more than 199 as we only have record of 200 Coils in total
+	if (startAddr>(LENG_MODBUS_DATA*10))  // The Coil Address can not be more than 199 as we only have record of 200 Coils in total
 	{
 		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
@@ -447,7 +447,7 @@ uint8_t writeMultiCoils (void)
 	}
 
 	uint16_t endAddr = startAddr+numCoils-1;  // Last coils address
-	if (endAddr>499)  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
+	if (endAddr>(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
 	{
 		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;

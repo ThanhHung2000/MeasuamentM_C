@@ -138,15 +138,14 @@ int main(void)
 		time_on=Delay_GetTimer(TID_TIMER_1ms);
 		if(time_on==0x01)
 		{
-			Task_Main_Controler();
-			Task_Run_Home();
 			Task_Run_HMI();
-			Update_state_MC();
+			Task_Run_Home();
+			Task_Main_Controler();
 		}
 		time_on=Delay_GetTimer(TID_TIMER_2ms);// cập nhập giá trị in out lên modbus
+		if(time_on==0x01)
 		{
 			Task_gpio_input();
-			Update_Input();
 			Task_gpio_output();
 		}
     /* USER CODE END WHILE */
@@ -690,7 +689,7 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA1_Stream5_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 1, 0);
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 
 }

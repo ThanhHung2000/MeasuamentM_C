@@ -193,6 +193,7 @@ void MC_MoveAbsolute(MC_Axis_t* axis, int32_t pos, uint32_t speed)// mục đíc
 		// 4. Chuyển trạng thái sang Tăng tốc để bộ Handler bắt đầu làm việc
 		axis->state = START_RUN;
 		axis->busy = 0x01U;
+		*axis->axis_busy_shadow = (uint16_t)axis->busy;
 		axis->done = 0x00U;
 	    axis->counter_pos=0x00U;
 	    axis->current_speed=SET_SPEED_500HZ;
@@ -699,10 +700,6 @@ void Rotbot_controler(MC_Axis_t* axis)
         	axis->current_pos -=axis->offset;
         }
         axis->offset=0x00U;
-        //Update_Input(*test); // chuyển update ở main 1ms
-//		*axis->current_pos_shodow = (uint16_t)axis->current_pos;
-//		*axis->current_speed_shadow = (uint16_t)axis->current_speed;
-
         axis->counter_pos = curent_counter;
         if(axis->done == 0x01U)
         {
@@ -722,33 +719,39 @@ void Rotbot_controler(MC_Axis_t* axis)
             axis->ramp_time=0x00U;
             axis->fulse_stop=0x00U;
         }
+        //Update_Input(*test); // chuyển update ở main 1ms
+		*axis->current_pos_shodow = (uint16_t)axis->current_pos;
+		*axis->current_speed_shadow = (uint16_t)axis->current_speed;
+		*axis->axis_busy_shadow = (uint16_t)axis->busy;
     }
 }
 void Copy_Data_Target(void)
 {
+	__disable_irq(); // Chỉ tốn 1 chu kỳ máy
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)
 	{
 			Rotbot_axis_target[i].target_position = Get_Holding_Registers(Rotbot_axis[i].indexaxis);
 			Rotbot_axis_target[i].target_speed=     Get_Holding_Registers(Rotbot_axis[i].indexaxis +1);
 	}
+	__enable_irq(); // Bật lại ngay
 }
 void Update_Input(void)
 {
 	Copy_data_output();
 	Copy_Gpio_Input();
 }
-void Update_state_MC(void)
-{
-	__disable_irq();
-	for(int i=0;i<NUM_AXIT_ROBOT;i++)
-	{
-
-		*Rotbot_axis[i].current_pos_shodow = (uint16_t)Rotbot_axis[i].current_pos;
-		*Rotbot_axis[i].current_speed_shadow = (uint16_t)Rotbot_axis[i].current_speed;
-		*Rotbot_axis[i].axis_busy_shadow = (uint16_t)Rotbot_axis[i].busy;
-	}
-	__enable_irq();
-}
+//void Update_state_MC(void)
+//{
+//	__disable_irq();
+//	for(int i=0;i<NUM_AXIT_ROBOT;i++)
+//	{
+//
+//		*Rotbot_axis[i].current_pos_shodow = (uint16_t)Rotbot_axis[i].current_pos;
+//		*Rotbot_axis[i].current_speed_shadow = (uint16_t)Rotbot_axis[i].current_speed;
+//		*Rotbot_axis[i].axis_busy_shadow = (uint16_t)Rotbot_axis[i].busy;
+//	}
+//	__enable_irq();
+//}
 void  MC_Control_Interrupt(void)
 {
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)

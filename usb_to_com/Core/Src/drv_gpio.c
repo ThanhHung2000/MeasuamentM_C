@@ -122,6 +122,7 @@ void Task_gpio_input(void)// copy dữ liệu sang địa chỉ 10000
 			gpio_input |=1UL<<i;
 		}
 	}
+	Copy_Gpio_Input();
 }
 void Copy_Gpio_Input(void)
 {
@@ -137,6 +138,7 @@ void Copy_data_output(void)
 }
 void Task_gpio_output(void)// copy dữ liệu sang địa chỉ 10000
 {
+	Copy_data_output();
 	uint8_t state=0x00U;
 	for (int i = 0; i < NUM_SENSORS; i++)
 	{

@@ -7,19 +7,23 @@
 #include "RS232.h"
 #include "modbusSlave.h"
 #include "mgr_hmi.h"
-#define RX_BUF_SIZE 256
+#include <string.h>
+#define RX_BUF_SIZE 64U
 uint8_t RxData[RX_BUF_SIZE];
+
+uint8_t MainBuf[RX_BUF_SIZE]; // Mảng tạm để xử lý logic
+
 uint8_t TxData[RX_BUF_SIZE];
 
-
+volatile uint16_t hoding_new=0x00U;
 
 
 
 void HMI_Init(void)
 {
 	//HAL_UARTEx_ReceiveToIdle_DMA(&huart2, RxData, RX_BUF_SIZE);
-	HAL_UARTEx_ReceiveToIdle_DMA(&huart2, RxData, RX_BUF_SIZE);
-	Init_hmi();
+	HAL_UARTEx_ReceiveToIdle_DMA(&huart2, MainBuf, RX_BUF_SIZE);
+	__HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT); // Khóa lần 1 (Khởi tạo)
 }
 uint8_t DecodeModbusRtu(const uint8_t *data, uint16_t length )
 {
@@ -39,6 +43,11 @@ uint8_t DecodeModbusRtu(const uint8_t *data, uint16_t length )
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	if(huart-> Instance == USART2){
+		// 1. Copy cực nhanh sang mảng tạm (chỉ copy đúng số byte đã nhận)
+		memcpy(RxData, MainBuf, Size);// copy RxData = MainBuf
+		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, MainBuf, RX_BUF_SIZE);
+		// PHẢI CÓ DÒNG NÀY Ở ĐÂY: Vì hàm trên vừa mới tự động bật HT lại
+		__HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT); // Khóa lại sau mỗi lần nhận
 		if (DecodeModbusRtu(RxData, Size))
 				{
 					switch (RxData[1]){
@@ -56,9 +65,11 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 						break;
 					case 0x06:
 						writeSingleReg();
+						hoding_new=0x01U;
 						break;
 					case 0x10:
 						writeHoldingRegs();
+						hoding_new=0x01U;
 						break;
 					case 0x05:
 						writeSingleCoil();
@@ -71,8 +82,6 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 						break;
 					}
 				}
-			//uart2_receive_IDLE_DMA();
-			HAL_UARTEx_ReceiveToIdle_DMA(&huart2, RxData, RX_BUF_SIZE);
 	}
 }
 

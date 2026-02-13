@@ -9,15 +9,13 @@
 #ifndef INC_RS232_H_
 #define INC_RS232_H_
 
-extern UART_HandleTypeDef huart4;
-extern UART_HandleTypeDef huart5;
-extern UART_HandleTypeDef huart2;
-extern UART_HandleTypeDef huart3;
-extern DMA_HandleTypeDef hdma_uart4_rx;
-extern DMA_HandleTypeDef hdma_uart5_rx;
-extern DMA_HandleTypeDef hdma_usart2_rx;
-extern DMA_HandleTypeDef hdma_usart3_rx;
 
+extern UART_HandleTypeDef huart2;
+
+
+extern DMA_HandleTypeDef hdma_usart2_rx;
+
+extern volatile uint16_t hoding_new;
 typedef enum {
 	EngineerSetting,
 	WorkerRunning,
