@@ -8,7 +8,7 @@
 #include "modbusSlave.h"
 #include "mgr_hmi.h"
 #include <string.h>
-#define RX_BUF_SIZE 64U
+
 uint8_t RxData[RX_BUF_SIZE];
 
 uint8_t MainBuf[RX_BUF_SIZE]; // Mảng tạm để xử lý logic

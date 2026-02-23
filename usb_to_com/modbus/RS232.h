@@ -8,7 +8,7 @@
 #include "modbusSlave.h"
 #ifndef INC_RS232_H_
 #define INC_RS232_H_
-
+#define RX_BUF_SIZE 64U
 
 extern UART_HandleTypeDef huart2;
 

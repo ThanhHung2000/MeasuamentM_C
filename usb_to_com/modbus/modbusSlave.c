@@ -14,6 +14,9 @@ extern uint8_t RxData[256];
 extern uint8_t TxData[256];
 extern UART_HandleTypeDef huart2;
 
+// Giả sử khung tin Modbus tối đa là 256 byte
+static uint8_t tx_buffer[RX_BUF_SIZE];
+
 static volatile uint16_t Holding_Registers_Database[LENG_MODBUS_DATA]={0,};
 static volatile uint8_t Coils_Database[LENG_MODBUS_DATA]={0,};
 static volatile uint8_t Inputs_Database[LENG_MODBUS_DATA]  = {0,};
@@ -78,12 +81,16 @@ void Reset_Tray(uint8_t index)
 }
 void sendData (uint8_t *data, int size)
 {
-	// we will calculate the CRC in this function itself
-	uint16_t crc = crc16(data, size);
-	data[size] = crc&0xFF;   // CRC LOW
-	data[size+1] = (crc>>8)&0xFF;  // CRC HIGH
+	if (size + 2 > RX_BUF_SIZE) return;
 
-	HAL_UART_Transmit(&huart2, data, size+2, 1000);
+	// 2. Copy dữ liệu gốc vào buffer an toàn
+	memcpy(tx_buffer, data, size);
+
+	uint16_t crc = crc16(tx_buffer, size);
+	tx_buffer[size]   = (uint8_t)crc&0xFF;   // CRC LOW
+	tx_buffer[size+1] = (uint8_t)(crc>>8)&0xFF;  // CRC HIGH
+//	HAL_UART_Transmit(&huart2, data, size+2, 1000);
+	HAL_UART_Transmit_DMA(&huart2, tx_buffer, size + 2);
 }
 
 void modbusException (uint8_t exceptioncode)

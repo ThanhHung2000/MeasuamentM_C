@@ -75,8 +75,8 @@ typedef struct {
 	volatile uint16_t *current_speed_shadow;
 } MC_Axis_t;
 typedef struct {
-    uint16_t target_position;    // Tọa độ mục tiêu (ví dụ: mm hoặc độ)
-    uint16_t target_speed;       // Tốc độ mục tiêu (ví dụ: mm/s)
+	volatile uint16_t target_position;    // Tọa độ mục tiêu (ví dụ: mm hoặc độ)
+	volatile uint16_t target_speed;       // Tốc độ mục tiêu (ví dụ: mm/s)
 } Axis_Config_t;
 
 void Init_Timer_chanal(void);
@@ -97,7 +97,7 @@ uint8_t Motor_Busy(void);
 void Update_Input(void);
 void Update_state_MC(void);
 void Copy_Data_Target(void);
-extern Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT];
+extern volatile Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT];
 //uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz,float freq_max );
 
 //void MC_MoveHandle(uint8_t axis,uint8_t status, int dir);

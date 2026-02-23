@@ -14,7 +14,6 @@
 #include "mgr_hmi.h"
 #include "modbusSlave.h"
 extern volatile uint16_t Input_Registers_Database[50];
-volatile uint8_t status_set=0x00U;
 // Mảng chứa 46 giá trị Jerk (đơn vị: Hz/ms^2)
 // Tính theo công thức: (Fmax - 1000) / (200 * 401)
 // với jerk_table[0] tương ứng với Fmax=1000 Hz
@@ -38,8 +37,8 @@ const float triangle_array[TIME_RAMPING] = {
 uint8_t Set_Direction_OX(uint8_t status);
 uint8_t Set_Direction_OY(uint8_t status);
 uint8_t Set_Direction_OZ(uint8_t status);
-static MC_Axis_t Rotbot_axis[NUM_AXIT_ROBOT];
-Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT]={0,};
+static  MC_Axis_t Rotbot_axis[NUM_AXIT_ROBOT];
+volatile Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT]={0,};
 void Init_Timer_chanal(void)
 {
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
@@ -525,21 +524,18 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz )// thời điểm 
 	float deltaY=(float)( posy > Rotbot_axis[1].current_pos ? posy-Rotbot_axis[1].current_pos : Rotbot_axis[1].current_pos - posy);
 	float Lmax = (deltaX > deltaY) ? deltaX : deltaY;
 	MC_MoveAbsolute(&Rotbot_axis[2],posz,Rotbot_axis_target[2].target_speed);
-	if(Lmax==0x00U) return 0;
-	float freq_max =(float) (Rotbot_axis_target[0].target_speed > Rotbot_axis_target[1].target_speed) ? Rotbot_axis_target[0].target_speed : Rotbot_axis_target[1].target_speed;
-
+	if(Lmax < 0.001f) return Motor_Busy();
+	uint16_t speed0 = Rotbot_axis_target[0].target_speed;
+	uint16_t speed1 = Rotbot_axis_target[1].target_speed;
+	float freq_max = (float)((speed0 > speed1) ? speed0 : speed1);
 	int32_t freqx=(int32_t)((freq_max*deltaX/Lmax));
-
-	if(freqx > Rotbot_axis_target[0].target_speed) freqx=Rotbot_axis_target[0].target_speed;
-
 	int32_t freqy=(int32_t)((freq_max*deltaY/Lmax));
 
-	if(freqy > Rotbot_axis_target[1].target_speed) freqy=Rotbot_axis_target[1].target_speed;
-
+	if(freqx > speed0) freqx=speed0;
+	if(freqy > speed1) freqy=speed1;
 	MC_MoveAbsolute(&Rotbot_axis[0],posx,freqx);
 	MC_MoveAbsolute(&Rotbot_axis[1],posy,freqy);
-	if(Motor_Busy()) status_set=0x01U;
-	return status_set;
+	return Motor_Busy();
 }
 void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 {
@@ -727,13 +723,16 @@ void Rotbot_controler(MC_Axis_t* axis)
 }
 void Copy_Data_Target(void)
 {
+	// 1. Lưu lại trạng thái ngắt hiện tại vào thanh ghi PRIMASK
+	uint32_t primask_bit = __get_PRIMASK();
 	__disable_irq(); // Chỉ tốn 1 chu kỳ máy
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)
 	{
 			Rotbot_axis_target[i].target_position = Get_Holding_Registers(Rotbot_axis[i].indexaxis);
 			Rotbot_axis_target[i].target_speed=     Get_Holding_Registers(Rotbot_axis[i].indexaxis +1);
 	}
-	__enable_irq(); // Bật lại ngay
+	__set_PRIMASK(primask_bit);
+//	__enable_irq(); // Bật lại ngay
 }
 void Update_Input(void)
 {
@@ -758,20 +757,6 @@ void  MC_Control_Interrupt(void)
 	{
 		Rotbot_controler(&Rotbot_axis[i]);// thay đổi tần số ở đây
 	}
-	if(Motor_Busy()==0x00U && status_set==0x01U)
-	{
-		status_set=0x00u;
-	}
-//	if(Get_State_Sensor(12U)==0x00U) // X
-//	{
-//		Rotbot_axis[0].state=AXIS_ERROR;
-//		MC_Errow_Axis(&Rotbot_axis[0]);
-//	}
-//	if(Get_State_Sensor(13U)==0x00U) //Y
-//	{
-//		Rotbot_axis[1].state=AXIS_ERROR;
-//		MC_Errow_Axis(&Rotbot_axis[1]);
-//	}
 }
 
 uint8_t Set_Direction_OX(uint8_t status)
