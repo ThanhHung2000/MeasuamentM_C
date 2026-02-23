@@ -9,10 +9,11 @@
 #ifndef INC_RS232_H_
 #define INC_RS232_H_
 #define RX_BUF_SIZE 64U
-
+//#define PROCES_IN_MAIN
 extern UART_HandleTypeDef huart2;
-
-
+extern volatile uint8_t is_new_frame;
+extern volatile uint16_t leng_size ;
+extern uint8_t RxData[RX_BUF_SIZE];
 extern DMA_HandleTypeDef hdma_usart2_rx;
 
 extern volatile uint16_t hoding_new;
@@ -65,6 +66,6 @@ extern Tab_Control_t* Main_controler;
 extern uint16_t* Mark;
 extern Tray2D * Point2D_Tray1;
 void HMI_Init(void);
-
+void Modbus_Rtu_Run(uint8_t *Rx_Uart, uint16_t Size);
 //void uart2_receive_IDLE_DMA();
 #endif /* INC_RS232_H_ */

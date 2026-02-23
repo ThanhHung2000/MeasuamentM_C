@@ -28,6 +28,7 @@
 #include "mgr_hmi.h"
 #include "flash_data.h"
 #include"dvr_gpio.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -76,7 +77,7 @@ static void MX_TIM7_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 uint8_t time_on=0x00;
-uint16_t test_real_time=0x00U;
+uint8_t local_buf[RX_BUF_SIZE];
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -136,6 +137,23 @@ int main(void)
   while (1)
   {
 	  	 // bổ sung watdog sau khi chạy ok
+		#ifdef PROCES_IN_MAIN
+			if(is_new_frame==0x01U)
+			{
+				// 1. Lưu trạng thái ngắt cũ
+				uint32_t primask_bit = __get_PRIMASK();
+
+				// 2. Chặn ngắt để bảo vệ quá trình đọc
+				__disable_irq();
+
+				// 3. Thực hiện copy dữ liệu một cách an toàn
+				memcpy(local_buf, RxData, leng_size);
+				is_new_frame = 0U; // Reset cờ báo
+				// 4. Khôi phục ngắt (đưa về trạng thái ban đầu)
+				__set_PRIMASK(primask_bit);
+				Modbus_Rtu_Run(local_buf,leng_size);
+			}
+		#endif
 		time_on=Delay_GetTimer(TID_TIMER_1ms);
 		if(time_on==0x01)
 		{

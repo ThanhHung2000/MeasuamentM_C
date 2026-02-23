@@ -18,17 +18,17 @@
 #define ILLEGAL_DATA_VALUE     0x03
 
 
-uint8_t readHoldingRegs (void);
-uint8_t readInputRegs (void);
-uint8_t readCoils (void);
-uint8_t readInputs (void);
+uint8_t readHoldingRegs (uint8_t *Rx_Uart);
+uint8_t readInputRegs (uint8_t *Rx_Uart);
+uint8_t readCoils (uint8_t *Rx_Uart);
+uint8_t readInputs (uint8_t *Rx_Uart);
 
-uint8_t writeSingleReg (void);
-uint8_t writeHoldingRegs (void);
-uint8_t writeSingleCoil (void);
-uint8_t writeMultiCoils (void);
+uint8_t writeSingleReg (uint8_t *Rx_Uart);
+uint8_t writeHoldingRegs (uint8_t *Rx_Uart);
+uint8_t writeSingleCoil (uint8_t *Rx_Uart);
+uint8_t writeMultiCoils (uint8_t *Rx_Uart);
 
-void modbusException (uint8_t exceptioncode);
+void modbusException (uint8_t *Rx_Uart, uint8_t exceptioncode);
 uint16_t Get_Holding_Registers(uint8_t index);
 uint8_t Get_Coild(uint8_t index);
 void Set_Inputs_Database(uint8_t index,uint8_t data);

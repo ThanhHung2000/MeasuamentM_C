@@ -10,7 +10,6 @@
 #include "RS232.h"
 #include "mgr_hmi.h"
 #define LENG_MODBUS_DATA 0x0FU
-extern uint8_t RxData[256];
 extern uint8_t TxData[256];
 extern UART_HandleTypeDef huart2;
 
@@ -97,33 +96,33 @@ void sendData (uint8_t *data, int size)
 	HAL_UART_Transmit_DMA(&huart2, tx_buffer, size + 2);
 }
 
-void modbusException (uint8_t exceptioncode)
+void modbusException (uint8_t *Rx_Uart, uint8_t exceptioncode)
 {
 	//| SLAVE_ID | FUNCTION_CODE | Exception code | CRC     |
 	//| 1 BYTE   |  1 BYTE       |    1 BYTE      | 2 BYTES |
 
-	TxData[0] = RxData[0];       // slave ID
-	TxData[1] = RxData[1]|0x80;  // adding 1 to the MSB of the function code
+	TxData[0] = Rx_Uart[0];       // slave ID
+	TxData[1] = Rx_Uart[1]|0x80;  // adding 1 to the MSB of the function code
 	TxData[2] = exceptioncode;   // Load the Exception code
 	sendData(TxData, 3);         // send Data... CRC will be calculated in the function
 }
 
 
-uint8_t readHoldingRegs (void)
+uint8_t readHoldingRegs (uint8_t *Rx_Uart)
 {
-	uint16_t startAddr = ((RxData[2]<<8)|RxData[3]);  // start Register Address
+	uint16_t startAddr = ((Rx_Uart[2]<<8)|Rx_Uart[3]);  // start Register Address
 
-	uint16_t numRegs = ((RxData[4]<<8)|RxData[5]);   // number to registers master has requested
+	uint16_t numRegs = ((Rx_Uart[4]<<8)|Rx_Uart[5]);   // number to registers master has requested
 	if ((numRegs<1)||(numRegs>125))  // maximum no. of Registers as per the PDF
 	{
-		modbusException (ILLEGAL_DATA_VALUE);  // send an exception
+		modbusException (Rx_Uart,ILLEGAL_DATA_VALUE);  // send an exception
 		return 0;
 	}
 
 	uint16_t endAddr = startAddr+numRegs-1;  // end Register
 	if (endAddr>LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
 	{
-		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
+		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
 	}
 
@@ -133,7 +132,7 @@ uint8_t readHoldingRegs (void)
 	//| 1 BYTE   |  1 BYTE       |  1 BYTE    | N*2 BYTES | 2 BYTES |
 
 	TxData[0] = SLAVE_ID;  // slave ID
-	TxData[1] = RxData[1];  // function code
+	TxData[1] = Rx_Uart[1];  // function code
 	TxData[2] = numRegs*2;  // Byte count
 	int indx = 3;  // we need to keep track of how many bytes has been stored in TxData Buffer
 
@@ -148,21 +147,21 @@ uint8_t readHoldingRegs (void)
 	return 1;   // success
 }
 
-uint8_t readInputRegs (void)
+uint8_t readInputRegs (uint8_t *Rx_Uart)
 {
-	uint16_t startAddr = ((RxData[2]<<8)|RxData[3]);  // start Register Address
+	uint16_t startAddr = ((Rx_Uart[2]<<8)|Rx_Uart[3]);  // start Register Address
 
-	uint16_t numRegs = ((RxData[4]<<8)|RxData[5]);   // number to registers master has requested
+	uint16_t numRegs = ((Rx_Uart[4]<<8)|Rx_Uart[5]);   // number to registers master has requested
 	if ((numRegs<1)||(numRegs>125))  // maximum no. of Registers as per the PDF
 	{
-		modbusException (ILLEGAL_DATA_VALUE);  // send an exception
+		modbusException (Rx_Uart,ILLEGAL_DATA_VALUE);  // send an exception
 		return 0;
 	}
 
 	uint16_t endAddr = startAddr+numRegs-1;  // end Register
 	if (endAddr>LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
 	{
-		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
+		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
 	}
 
@@ -172,7 +171,7 @@ uint8_t readInputRegs (void)
 	//| 1 BYTE   |  1 BYTE       |  1 BYTE    | N*2 BYTES | 2 BYTES |
 
 	TxData[0] = SLAVE_ID;  // slave ID
-	TxData[1] = RxData[1];  // function code
+	TxData[1] = Rx_Uart[1];  // function code
 	TxData[2] = numRegs*2;  // Byte count
 	int indx = 3;  // we need to keep track of how many bytes has been stored in TxData Buffer
 
@@ -187,21 +186,21 @@ uint8_t readInputRegs (void)
 	return 1;   // success
 }
 
-uint8_t readCoils (void)
+uint8_t readCoils (uint8_t *Rx_Uart)
 {
-	uint16_t startAddr = ((RxData[2]<<8)|RxData[3]);  // start Coil Address
+	uint16_t startAddr = ((Rx_Uart[2]<<8)|Rx_Uart[3]);  // start Coil Address
 
-	uint16_t numCoils = ((RxData[4]<<8)|RxData[5]);   // number to coils master has requested
+	uint16_t numCoils = ((Rx_Uart[4]<<8)|Rx_Uart[5]);   // number to coils master has requested
 	if ((numCoils<1)||(numCoils>2000))  // maximum no. of coils as per the PDF
 	{
-		modbusException (ILLEGAL_DATA_VALUE);  // send an exception
+		modbusException (Rx_Uart,ILLEGAL_DATA_VALUE);  // send an exception
 		return 0;
 	}
 
 	uint16_t endAddr = startAddr+numCoils-1;  // Last coils address
 	if (endAddr>(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
 	{
-		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
+		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
 	}
 
@@ -215,7 +214,7 @@ uint8_t readCoils (void)
 	//| 1 BYTE   |  1 BYTE       |  1 BYTE    | N*2 BYTES | 2 BYTES |
 
 	TxData[0] = SLAVE_ID;  // slave ID
-	TxData[1] = RxData[1];  // function code
+	TxData[1] = Rx_Uart[1];  // function code
 	TxData[2] = (numCoils/8) + ((numCoils%8)>0 ? 1:0);  // Byte count
 	int indx = 3;  // we need to keep track of how many bytes has been stored in TxData Buffer
 
@@ -253,21 +252,21 @@ uint8_t readCoils (void)
 	return 1;   // success
 }
 
-uint8_t readInputs (void)
+uint8_t readInputs (uint8_t *Rx_Uart)
 {
-	uint16_t startAddr = ((RxData[2]<<8)|RxData[3]);  // start Register Address
+	uint16_t startAddr = ((Rx_Uart[2]<<8)|Rx_Uart[3]);  // start Register Address
 
-	uint16_t numCoils = ((RxData[4]<<8)|RxData[5]);   // number to coils master has requested
+	uint16_t numCoils = ((Rx_Uart[4]<<8)|Rx_Uart[5]);   // number to coils master has requested
 	if ((numCoils<1)||(numCoils>2000))  // maximum no. of coils as per the PDF
 	{
-		modbusException (ILLEGAL_DATA_VALUE);  // send an exception
+		modbusException (Rx_Uart,ILLEGAL_DATA_VALUE);  // send an exception
 		return 0;
 	}
 
 	uint16_t endAddr = startAddr+numCoils-1;  // Last coils address
 	if (endAddr>(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
 	{
-		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
+		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
 	}
 
@@ -281,7 +280,7 @@ uint8_t readInputs (void)
 	//| 1 BYTE   |  1 BYTE       |  1 BYTE    | N*2 BYTES | 2 BYTES |
 
 	TxData[0] = SLAVE_ID;  // slave ID
-	TxData[1] = RxData[1];  // function code
+	TxData[1] = Rx_Uart[1];  // function code
 	TxData[2] = (numCoils/8) + ((numCoils%8)>0 ? 1:0);  // Byte count
 	int indx = 3;  // we need to keep track of how many bytes has been stored in TxData Buffer
 
@@ -319,21 +318,21 @@ uint8_t readInputs (void)
 	return 1;   // success
 }
 
-uint8_t writeHoldingRegs (void)
+uint8_t writeHoldingRegs (uint8_t *Rx_Uart)
 {
-	uint16_t startAddr = ((RxData[2]<<8)|RxData[3]);  // start Register Address
+	uint16_t startAddr = ((Rx_Uart[2]<<8)|Rx_Uart[3]);  // start Register Address
     uint8_t index = 7U;  // we need to keep track of index in RxData
-	uint16_t numRegs = ((RxData[4]<<8)|RxData[5]);   // number to registers master has requested
+	uint16_t numRegs = ((Rx_Uart[4]<<8)|Rx_Uart[5]);   // number to registers master has requested
 	if ((numRegs<1)||(numRegs>123))  // maximum no. of Registers as per the PDF
 	{
-		modbusException (ILLEGAL_DATA_VALUE);  // send an exception
+		modbusException (Rx_Uart,ILLEGAL_DATA_VALUE);  // send an exception
 		return 0;
 	}
 
 	uint16_t endAddr = startAddr+numRegs-1;  // end Register
 	if (endAddr>LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
 	{
-		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
+		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
 	}
 
@@ -348,7 +347,7 @@ uint8_t writeHoldingRegs (void)
 //	}
 	for (int i = 0; i < numRegs; i++)
 	{
-	    Holding_Registers_Database[startAddr++] = (RxData[index] << 8) | RxData[index + 1];
+	    Holding_Registers_Database[startAddr++] = (Rx_Uart[index] << 8) | Rx_Uart[index + 1];
 	    index += 2; // Tăng index lên 2 đơn vị sau khi đã dùng xong cho cả 2 byte
 	}
 	// Prepare Response
@@ -357,23 +356,23 @@ uint8_t writeHoldingRegs (void)
 	//| 1 BYTE   |  1 BYTE       |  2 BYTE    | 2 BYTES      | 2 BYTES |
 
 	TxData[0] = SLAVE_ID;    // slave ID
-	TxData[1] = RxData[1];   // function code
-	TxData[2] = RxData[2];   // Start Addr HIGH Byte
-	TxData[3] = RxData[3];   // Start Addr LOW Byte
-	TxData[4] = RxData[4];   // num of Regs HIGH Byte
-	TxData[5] = RxData[5];   // num of Regs LOW Byte
+	TxData[1] = Rx_Uart[1];   // function code
+	TxData[2] = Rx_Uart[2];   // Start Addr HIGH Byte
+	TxData[3] = Rx_Uart[3];   // Start Addr LOW Byte
+	TxData[4] = Rx_Uart[4];   // num of Regs HIGH Byte
+	TxData[5] = Rx_Uart[5];   // num of Regs LOW Byte
 
 	sendData(TxData, 6);  // send data... CRC will be calculated in the function itself
 	return 1;   // success
 }
 
-uint8_t writeSingleReg (void)
+uint8_t writeSingleReg (uint8_t *Rx_Uart)
 {
-	uint16_t startAddr = ((RxData[2]<<8)|RxData[3]);  // start Register Address
+	uint16_t startAddr = ((Rx_Uart[2]<<8)|Rx_Uart[3]);  // start Register Address
 
 	if (startAddr>49)  // The Register Address can not be more than 49 as we only have record of 50 Registers in total
 	{
-		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
+		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
 	}
 
@@ -381,7 +380,7 @@ uint8_t writeSingleReg (void)
 	 * Data is the combination of 2 bytes, RxData[4] and RxData[5]
 	 */
 
-	Holding_Registers_Database[startAddr] = (RxData[4]<<8)|RxData[5];
+	Holding_Registers_Database[startAddr] = (Rx_Uart[4]<<8)|Rx_Uart[5];
 
 	// Prepare Response
 
@@ -389,23 +388,23 @@ uint8_t writeSingleReg (void)
 	//| 1 BYTE   |  1 BYTE       |  2 BYTE    | 2 BYTES  | 2 BYTES |
 
 	TxData[0] = SLAVE_ID;    // slave ID
-	TxData[1] = RxData[1];   // function code
-	TxData[2] = RxData[2];   // Start Addr HIGH Byte
-	TxData[3] = RxData[3];   // Start Addr LOW Byte
-	TxData[4] = RxData[4];   // Reg Data HIGH Byte
-	TxData[5] = RxData[5];   // Reg Data LOW  Byte
+	TxData[1] = Rx_Uart[1];   // function code
+	TxData[2] = Rx_Uart[2];   // Start Addr HIGH Byte
+	TxData[3] = Rx_Uart[3];   // Start Addr LOW Byte
+	TxData[4] = Rx_Uart[4];   // Reg Data HIGH Byte
+	TxData[5] = Rx_Uart[5];   // Reg Data LOW  Byte
 
 	sendData(TxData, 6);  // send data... CRC will be calculated in the function itself
 	return 1;   // success
 }
 
-uint8_t writeSingleCoil (void)
+uint8_t writeSingleCoil (uint8_t *Rx_Uart)
 {
-	uint16_t startAddr = ((RxData[2]<<8)|RxData[3]);  // start Coil Address
+	uint16_t startAddr = ((Rx_Uart[2]<<8)|Rx_Uart[3]);  // start Coil Address
 
 	if (startAddr>(LENG_MODBUS_DATA*10))  // The Coil Address can not be more than 199 as we only have record of 200 Coils in total
 	{
-		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
+		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
 	}
 
@@ -420,12 +419,12 @@ uint8_t writeSingleCoil (void)
 	 * All other values are illegal and will not affect the coil.
 	 */
 
-	if ((RxData[4] == 0xFF) && (RxData[5] == 0x00))
+	if ((Rx_Uart[4] == 0xFF) && (Rx_Uart[5] == 0x00))
 	{
 		Coils_Database[startByte] |= 1<<bitPosition; // Replace that bit with 1
 	}
 
-	else if ((RxData[4] == 0x00) && (RxData[5] == 0x00))
+	else if ((Rx_Uart[4] == 0x00) && (Rx_Uart[5] == 0x00))
 	{
 		Coils_Database[startByte] &= ~(1<<bitPosition); // Replace that bit with 0
 	}
@@ -436,31 +435,31 @@ uint8_t writeSingleCoil (void)
 	//| 1 BYTE   |  1 BYTE       |  2 BYTE    | 2 BYTES  | 2 BYTES |
 
 	TxData[0] = SLAVE_ID;    // slave ID
-	TxData[1] = RxData[1];   // function code
-	TxData[2] = RxData[2];   // Start Addr HIGH Byte
-	TxData[3] = RxData[3];   // Start Addr LOW Byte
-	TxData[4] = RxData[4];   // Coil Data HIGH Byte
-	TxData[5] = RxData[5];   // Coil Data LOW  Byte
+	TxData[1] = Rx_Uart[1];   // function code
+	TxData[2] = Rx_Uart[2];   // Start Addr HIGH Byte
+	TxData[3] = Rx_Uart[3];   // Start Addr LOW Byte
+	TxData[4] = Rx_Uart[4];   // Coil Data HIGH Byte
+	TxData[5] = Rx_Uart[5];   // Coil Data LOW  Byte
 
 	sendData(TxData, 6);  // send data... CRC will be calculated in the function itself
 	return 1;   // success
 }
 
-uint8_t writeMultiCoils (void)
+uint8_t writeMultiCoils (uint8_t *Rx_Uart)
 {
-	uint16_t startAddr = ((RxData[2]<<8)|RxData[3]);  // start Coil Address
+	uint16_t startAddr = ((Rx_Uart[2]<<8)|Rx_Uart[3]);  // start Coil Address
 
-	uint16_t numCoils = ((RxData[4]<<8)|RxData[5]);   // number to coils master has requested
+	uint16_t numCoils = ((Rx_Uart[4]<<8)|Rx_Uart[5]);   // number to coils master has requested
 	if ((numCoils<1)||(numCoils>1968))  // maximum no. of coils as per the PDF
 	{
-		modbusException (ILLEGAL_DATA_VALUE);  // send an exception
+		modbusException (Rx_Uart,ILLEGAL_DATA_VALUE);  // send an exception
 		return 0;
 	}
 
 	uint16_t endAddr = startAddr+numCoils-1;  // Last coils address
 	if (endAddr>(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
 	{
-		modbusException(ILLEGAL_DATA_ADDRESS);   // send an exception
+		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
 	}
 
@@ -484,7 +483,7 @@ uint8_t writeMultiCoils (void)
 	// Modify the bits as per the Byte received
 	for (int i=0; i<numCoils; i++)
 	{
-		if (((RxData[indx]>>indxPosition)&0x01) == 1)
+		if (((Rx_Uart[indx]>>indxPosition)&0x01) == 1)
 		{
 			Coils_Database[startByte] |= 1<<bitPosition;  // replace that bit with 1
 		}
@@ -513,11 +512,11 @@ uint8_t writeMultiCoils (void)
 	//| 1 BYTE   |  1 BYTE       |  2 BYTE    | 2 BYTES  | 2 BYTES |
 
 	TxData[0] = SLAVE_ID;    // slave ID
-	TxData[1] = RxData[1];   // function code
-	TxData[2] = RxData[2];   // Start Addr HIGH Byte
-	TxData[3] = RxData[3];   // Start Addr LOW Byte
-	TxData[4] = RxData[4];   // num of coils HIGH Byte
-	TxData[5] = RxData[5];   // num of coils LOW  Byte
+	TxData[1] = Rx_Uart[1];   // function code
+	TxData[2] = Rx_Uart[2];   // Start Addr HIGH Byte
+	TxData[3] = Rx_Uart[3];   // Start Addr LOW Byte
+	TxData[4] = Rx_Uart[4];   // num of coils HIGH Byte
+	TxData[5] = Rx_Uart[5];   // num of coils LOW  Byte
 
 	sendData(TxData, 6);  // send data... CRC will be calculated in the function itself
 	return 1;   // success
