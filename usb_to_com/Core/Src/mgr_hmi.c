@@ -386,6 +386,7 @@ void Handle_Home(void)
 	if(home==0x00U)
 	{
 		home=0x01U;
+		Main_controler->bits.Go_Home=0x00U;
 	}
 }
 void Handle_Emergency(void)

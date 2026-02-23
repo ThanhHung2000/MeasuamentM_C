@@ -576,8 +576,6 @@ void Rotbot_controler(volatile MC_Axis_t* axis)
 {
 	int32_t curent_counter=0x00U;
 	uint32_t new_arr=0x00U;
-	uint16_t run_time=0x00U;
-	run_time++;
     switch (axis->state)
     {
 		case START_RUN:
