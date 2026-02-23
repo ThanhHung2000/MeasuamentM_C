@@ -81,14 +81,18 @@ void Reset_Tray(uint8_t index)
 }
 void sendData (uint8_t *data, int size)
 {
+	// 1. Kiểm tra DMA có đang rảnh không
+	if (huart2.gState != HAL_UART_STATE_READY) {
+		return; // Hoặc thêm cơ chế retry/log lỗi nếu cần
+	}
 	if (size + 2 > RX_BUF_SIZE) return;
 
 	// 2. Copy dữ liệu gốc vào buffer an toàn
 	memcpy(tx_buffer, data, size);
 
 	uint16_t crc = crc16(tx_buffer, size);
-	tx_buffer[size]   = (uint8_t)crc&0xFF;   // CRC LOW
-	tx_buffer[size+1] = (uint8_t)(crc>>8)&0xFF;  // CRC HIGH
+	tx_buffer[size]   = (uint8_t)(crc & 0xFF);   // CRC LOW
+	tx_buffer[size+1] = (uint8_t)((crc>>8)&0xFF);  // CRC HIGH
 //	HAL_UART_Transmit(&huart2, data, size+2, 1000);
 	HAL_UART_Transmit_DMA(&huart2, tx_buffer, size + 2);
 }
