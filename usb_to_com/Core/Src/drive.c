@@ -37,7 +37,7 @@ const float triangle_array[TIME_RAMPING] = {
 uint8_t Set_Direction_OX(uint8_t status);
 uint8_t Set_Direction_OY(uint8_t status);
 uint8_t Set_Direction_OZ(uint8_t status);
-static  MC_Axis_t Rotbot_axis[NUM_AXIT_ROBOT];
+volatile static  MC_Axis_t Rotbot_axis[NUM_AXIT_ROBOT];
 volatile Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT]={0,};
 void Init_Timer_chanal(void)
 {
@@ -87,7 +87,7 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_X_ROBOT].htim_counter= &htim5;//htim5
 	Rotbot_axis[AXIT_X_ROBOT].channel=TIM_CHANNEL_1;//TIM_CHANNEL_1
 	Rotbot_axis[AXIT_X_ROBOT].channel_counter=TIM_CHANNEL_1;//TIM_CHANNEL_1
-	Rotbot_axis[AXIT_X_ROBOT].Set_Direction_Pin=Set_Direction_OY;//Set_Direction_OY
+	Rotbot_axis[AXIT_X_ROBOT].Set_Direction_Pin=Set_Direction_OX;//Set_Direction_OY
 	Rotbot_axis[AXIT_X_ROBOT].max_axis=MAX_Axis_OX;//&Rotbot_axis_target[AXIT_X_ROBOT].max_limit;
 	Rotbot_axis[AXIT_X_ROBOT].indexaxis=0x00U;
 
@@ -99,7 +99,7 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_Y_ROBOT].htim_counter= &htim2;//htim2
 	Rotbot_axis[AXIT_Y_ROBOT].channel=TIM_CHANNEL_1;//TIM_CHANNEL_1
 	Rotbot_axis[AXIT_Y_ROBOT].channel_counter=TIM_CHANNEL_2;//TIM_CHANNEL_2
-	Rotbot_axis[AXIT_Y_ROBOT].Set_Direction_Pin=Set_Direction_OX;//Set_Direction_OX
+	Rotbot_axis[AXIT_Y_ROBOT].Set_Direction_Pin=Set_Direction_OY;//Set_Direction_OX
 	Rotbot_axis[AXIT_Y_ROBOT].max_axis=MAX_Axis_OY;//&Rotbot_axis_target[AXIT_Y_ROBOT].max_limit;
 	Rotbot_axis[AXIT_Y_ROBOT].indexaxis=0x03U;
 
@@ -160,7 +160,7 @@ void MC_MoveAbsolute_old(MC_Axis_t* axis, int32_t pos, uint32_t speed)// mục �
     axis->current_speed=SET_SPEED_1000HZ;
     // CƯỠNG BỨC cập nhật giá trị từ vùng đệm vào thanh ghi thực thi CỦA timer đếm xung
 }
-void MC_MoveAbsolute(MC_Axis_t* axis, int32_t pos, uint32_t speed)// mục đích Kích hoạt di chuyển đến vị trí tuyệt đối
+void MC_MoveAbsolute(volatile MC_Axis_t* axis, int32_t pos, uint32_t speed)// mục đích Kích hoạt di chuyển đến vị trí tuyệt đối
 {
 	// 1. Kiểm tra nếu trục đang bận hoặc có lỗi thì không nhận lệnh mới (Tùy logic)
 		if(axis->state == AXIS_ERROR || axis->busy == 0x01) return;
@@ -198,7 +198,7 @@ void MC_MoveAbsolute(MC_Axis_t* axis, int32_t pos, uint32_t speed)// mục đíc
 	    axis->current_speed=SET_SPEED_500HZ;
 	    // CƯỠNG BỨC cập nhật giá trị từ vùng đệm vào thanh ghi thực thi CỦA timer đếm xung
 }
-void Timer_PWM_Chanal_Start(MC_Axis_t* axis)
+void Timer_PWM_Chanal_Start(volatile MC_Axis_t* axis)
 {
 	// RESET BỘ ĐẾM COUNTER CỦA TIMER PHÁT XUNG VÀ TIMER ĐẾM XUNG
 	__HAL_TIM_SET_COUNTER(axis->htim, 0);
@@ -237,7 +237,7 @@ void MC_MoveRelative(MC_Axis_t* axis,int32_t distance,uint32_t freq )
 	taget_move = (axis->current_pos + distance);
 	MC_MoveAbsolute(axis,taget_move,freq);
 }
-uint8_t MC_MoveHomeAbsolute(MC_Axis_t* axis)
+uint8_t MC_MoveHomeAbsolute( volatile MC_Axis_t* axis)
 {
 	if(axis->busy != 0x00U)
 	{
@@ -572,7 +572,7 @@ void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 		break;
 	}
 }
-void Rotbot_controler(MC_Axis_t* axis)
+void Rotbot_controler(volatile MC_Axis_t* axis)
 {
 	int32_t curent_counter=0x00U;
 	uint32_t new_arr=0x00U;
@@ -759,13 +759,13 @@ void  MC_Control_Interrupt(void)
 	}
 }
 
-uint8_t Set_Direction_OX(uint8_t status)
+uint8_t Set_Direction_OY(uint8_t status)
 {
 	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9, status );
 	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9, status );
 	return HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9) > 0x00U ? 0x01U:0x00U;
 }
-uint8_t Set_Direction_OY(uint8_t status)
+uint8_t Set_Direction_OX(uint8_t status)
 {
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_7, status );
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_7, status );

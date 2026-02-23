@@ -19,8 +19,7 @@
 
 
 static int8_t fisrtbit=0x00U;
-static uint8_t Emergency = 0;
-uint8_t save=0x00U;
+static volatile uint8_t Emergency = 0;
 volatile static uint8_t home=0x00U;
 volatile static uint8_t home_done=0x00U;
 uint8_t start_run=0x00U;
