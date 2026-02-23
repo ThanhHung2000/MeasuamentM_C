@@ -368,7 +368,7 @@ void Handle_Down(uint8_t data)
 
 void Handle_Set(void)
 {
-	if(Get_home_done()==0x00U) return ;//home!=0x00u
+	if(Get_home_done()==0x00U || (Get_Go_home()==0x01U) ) return ;//home!=0x00u
 //	if (hoding_new)
 	{
 		Copy_Data_Target();

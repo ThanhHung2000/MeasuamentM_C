@@ -524,7 +524,7 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz )// thời điểm 
 	float deltaY=(float)( posy > Rotbot_axis[1].current_pos ? posy-Rotbot_axis[1].current_pos : Rotbot_axis[1].current_pos - posy);
 	float Lmax = (deltaX > deltaY) ? deltaX : deltaY;
 	MC_MoveAbsolute(&Rotbot_axis[2],posz,Rotbot_axis_target[2].target_speed);
-	if(Lmax < 0.001f) return Motor_Busy();
+	if(Lmax < 1.0f) return Motor_Busy();
 	uint16_t speed0 = Rotbot_axis_target[0].target_speed;
 	uint16_t speed1 = Rotbot_axis_target[1].target_speed;
 	float freq_max = (float)((speed0 > speed1) ? speed0 : speed1);
@@ -539,7 +539,7 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz )// thời điểm 
 }
 void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 {
-	if(Get_home_done()==0x00U || Get_Go_home()==0x01U) return ;
+	if((Get_home_done()==0x00U) || (Get_Go_home()==0x01U)) return ;
 	switch(status)
 	{
 		case STATUS_JOGGING_OXIS:// jogging
