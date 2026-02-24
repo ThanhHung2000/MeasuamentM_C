@@ -69,7 +69,8 @@ void Reset_position(void)
 		Rotbot_axis[i].direction=0x00U;
 		Rotbot_axis[i].fulse_stop=0x00U;
 		Rotbot_axis[i].offset=0x00U;
-
+		*(Rotbot_axis[i].current_pos_shodow)   = 0x00U;
+		*(Rotbot_axis[i].current_speed_shadow) = 0x00U;
 	}
 }
 void Robot_Init(void)

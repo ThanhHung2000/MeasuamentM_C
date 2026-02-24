@@ -12,7 +12,7 @@
 #include "stm32f4xx_hal.h"
 
 #define SLAVE_ID 1
-#define LENG_MODBUS_DATA 20U
+#define LENG_MODBUS_DATA 24U
 #define ILLEGAL_FUNCTION       0x01
 #define ILLEGAL_DATA_ADDRESS   0x02
 #define ILLEGAL_DATA_VALUE     0x03
