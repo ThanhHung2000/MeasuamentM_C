@@ -8,12 +8,12 @@
 #include "modbusSlave.h"
 #ifndef INC_RS232_H_
 #define INC_RS232_H_
-#define RX_BUF_SIZE 64U
-//#define PROCES_IN_MAIN
+#define RX_BUF_SIZE 128U
+#define PROCES_IN_MAIN
 extern UART_HandleTypeDef huart2;
 extern volatile uint8_t is_new_frame;
 extern volatile uint16_t leng_size ;
-extern uint8_t RxData[RX_BUF_SIZE];
+extern uint8_t ProcessBuf[RX_BUF_SIZE];
 extern DMA_HandleTypeDef hdma_usart2_rx;
 
 extern volatile uint16_t hoding_new;

@@ -39,7 +39,7 @@ typedef enum __attribute__((packed)) {
 	HOME_STOPPING,
 	JOGGING_RUN
 } AxisState;
-typedef struct {
+typedef struct __attribute__((packed)) {
     // Cấu hình phần cứng
     TIM_HandleTypeDef* htim;
     TIM_HandleTypeDef* htim_counter;

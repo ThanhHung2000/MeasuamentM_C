@@ -9,12 +9,13 @@
 #include "string.h"
 #include "RS232.h"
 #include "mgr_hmi.h"
-#define LENG_MODBUS_DATA 0x0FU
-extern uint8_t TxData[256];
+#include "RS232.h"
+
+extern uint8_t TxData[RX_BUF_SIZE];
 extern UART_HandleTypeDef huart2;
 
 // Giả sử khung tin Modbus tối đa là 256 byte
-static uint8_t tx_buffer[RX_BUF_SIZE];
+uint8_t tx_buffer[RX_BUF_SIZE];
 
 static volatile uint16_t Holding_Registers_Database[LENG_MODBUS_DATA]={0,};
 static volatile uint8_t Coils_Database[LENG_MODBUS_DATA]={0,};
@@ -24,27 +25,27 @@ volatile uint16_t Input_Registers_Database[LENG_MODBUS_DATA]={0,};
 Tab_Control_t* Main_controler = (Tab_Control_t*)&Coils_Database[0];
 Control_motor_t* Control_motor = (Control_motor_t*)&Coils_Database[1];
 Tray2D * Point2D_Tray1 = (Tray2D *)&Holding_Registers_Database[12];
-void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint16_t state)
-{
-	if(Get_home_done()==0x00U)
-	{
-		Input_Registers_Database[index]=0x00U;
-		Input_Registers_Database[index + 1]=0x00U;
-		Input_Registers_Database[index + 2]=0x00U;
-		return ;
-	}
-	Input_Registers_Database[index]=toa_do;
-	Input_Registers_Database[index + 1]=toc_do;
-	if(Input_Registers_Database[index + 2] != state)
-	{
-		Input_Registers_Database[index + 2]=state;
-	}
-
-}
-void Set_Input_Register(uint8_t index, uint16_t data)
-{
-	Input_Registers_Database[index]=data;
-}
+//void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint16_t state)
+//{
+//	if(Get_home_done()==0x00U)
+//	{
+//		Input_Registers_Database[index]=0x00U;
+//		Input_Registers_Database[index + 1]=0x00U;
+//		Input_Registers_Database[index + 2]=0x00U;
+//		return ;
+//	}
+//	Input_Registers_Database[index]=toa_do;
+//	Input_Registers_Database[index + 1]=toc_do;
+//	if(Input_Registers_Database[index + 2] != state)
+//	{
+//		Input_Registers_Database[index + 2]=state;
+//	}
+//
+//}
+//void Set_Input_Register(uint8_t index, uint16_t data)
+//{
+//	Input_Registers_Database[index]=data;
+//}
 uint8_t Get_Coild(uint8_t index)
 {
 	if(index>50) return 0x00U;
@@ -61,9 +62,6 @@ uint16_t Get_Holding_Registers(uint8_t index)
 }
 void Reset_Oxis(void)
 {
-	Set_Input_Register(0x00U,0x00U);
-	Set_Input_Register(3U,0x00U);
-	Set_Input_Register(6U,0x00U);
 }
 void Copy_Holding_Registers(uint8_t index,uint8_t index_coppy)
 {
@@ -120,7 +118,7 @@ uint8_t readHoldingRegs (uint8_t *Rx_Uart)
 	}
 
 	uint16_t endAddr = startAddr+numRegs-1;  // end Register
-	if (endAddr>LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
+	if (endAddr>=LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
 	{
 		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
@@ -159,7 +157,7 @@ uint8_t readInputRegs (uint8_t *Rx_Uart)
 	}
 
 	uint16_t endAddr = startAddr+numRegs-1;  // end Register
-	if (endAddr>LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
+	if (endAddr>=LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
 	{
 		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
@@ -198,7 +196,7 @@ uint8_t readCoils (uint8_t *Rx_Uart)
 	}
 
 	uint16_t endAddr = startAddr+numCoils-1;  // Last coils address
-	if (endAddr>(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
+	if (endAddr>=(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
 	{
 		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
@@ -206,7 +204,7 @@ uint8_t readCoils (uint8_t *Rx_Uart)
 
 
 	//reset TxData buffer
-	memset (TxData, '\0', 256);
+	memset (TxData, '\0', RX_BUF_SIZE);
 
 	// Prepare TxData buffer
 
@@ -264,7 +262,7 @@ uint8_t readInputs (uint8_t *Rx_Uart)
 	}
 
 	uint16_t endAddr = startAddr+numCoils-1;  // Last coils address
-	if (endAddr>(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
+	if (endAddr>=(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
 	{
 		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
@@ -272,7 +270,7 @@ uint8_t readInputs (uint8_t *Rx_Uart)
 
 
 	//reset TxData buffer
-	memset (TxData, '\0', 256);
+	memset (TxData, '\0', RX_BUF_SIZE);
 
 	// Prepare TxData buffer
 
@@ -330,7 +328,7 @@ uint8_t writeHoldingRegs (uint8_t *Rx_Uart)
 	}
 
 	uint16_t endAddr = startAddr+numRegs-1;  // end Register
-	if (endAddr>LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
+	if (endAddr>=LENG_MODBUS_DATA)  // end Register can not be more than 49 as we only have record of 50 Registers in total
 	{
 		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
@@ -402,7 +400,7 @@ uint8_t writeSingleCoil (uint8_t *Rx_Uart)
 {
 	uint16_t startAddr = ((Rx_Uart[2]<<8)|Rx_Uart[3]);  // start Coil Address
 
-	if (startAddr>(LENG_MODBUS_DATA*10))  // The Coil Address can not be more than 199 as we only have record of 200 Coils in total
+	if (startAddr>=(LENG_MODBUS_DATA*10))  // The Coil Address can not be more than 199 as we only have record of 200 Coils in total
 	{
 		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;
@@ -457,7 +455,7 @@ uint8_t writeMultiCoils (uint8_t *Rx_Uart)
 	}
 
 	uint16_t endAddr = startAddr+numCoils-1;  // Last coils address
-	if (endAddr>(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
+	if (endAddr>=(LENG_MODBUS_DATA*10))  // end coil can not be more than 199 as we only have record of 200 (0-199) coils in total
 	{
 		modbusException(Rx_Uart,ILLEGAL_DATA_ADDRESS);   // send an exception
 		return 0;

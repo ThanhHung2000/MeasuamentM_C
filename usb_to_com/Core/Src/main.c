@@ -147,7 +147,7 @@ int main(void)
 				__disable_irq();
 
 				// 3. Thực hiện copy dữ liệu một cách an toàn
-				memcpy(local_buf, RxData, leng_size);
+				memcpy(local_buf, ProcessBuf, leng_size);
 				is_new_frame = 0U; // Reset cờ báo
 				// 4. Khôi phục ngắt (đưa về trạng thái ban đầu)
 				__set_PRIMASK(primask_bit);

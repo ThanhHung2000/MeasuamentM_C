@@ -20,7 +20,7 @@ uint8_t ProcessBuf[RX_BUF_SIZE];
 void HMI_Init(void)
 {
 	//HAL_UARTEx_ReceiveToIdle_DMA(&huart2, RxData, RX_BUF_SIZE);
-	HAL_UARTEx_ReceiveToIdle_DMA(&huart2, ProcessBuf, RX_BUF_SIZE);
+	HAL_UARTEx_ReceiveToIdle_DMA(&huart2, RxData, RX_BUF_SIZE);
 	__HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT); // Khóa lần 1 (Khởi tạo)
 }
 uint8_t DecodeModbusRtu(const uint8_t *data, uint16_t length )
@@ -78,15 +78,15 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	if(huart-> Instance == USART2)
 	{
-		memcpy(RxData, ProcessBuf, Size);//copy ra vùng đêm để xử lý
+		memcpy(ProcessBuf, RxData, Size);//copy ra vùng đêm để xử lý
 #ifdef PROCES_IN_MAIN
 		// 2. Đặt flag để main xử lý
 		is_new_frame = 0x01U;
 		leng_size=Size;
 #else
-		Modbus_Rtu_Run(RxData,Size);
+		Modbus_Rtu_Run(ProcessBuf,Size);
 #endif
-		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, ProcessBuf, RX_BUF_SIZE);
+		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, RxData, RX_BUF_SIZE);
 		__HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT); // Khóa lần 1 (Khởi tạo)
 	}
 }
