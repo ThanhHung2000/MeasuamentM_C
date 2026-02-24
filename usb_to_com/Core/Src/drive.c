@@ -201,10 +201,10 @@ void Timer_PWM_Chanal_Start(volatile MC_Axis_t* axis)
 	__HAL_TIM_SET_COMPARE(axis->htim_counter, axis->channel_counter, axis->delta_pos);
 	axis->htim_counter->Instance->EGR = TIM_EGR_UG;
     // set tần só ban đầu của timer phát xung là 15 hz, lúc khởi động coi tần số gần bằng min là 1kHz
-    __HAL_TIM_SET_AUTORELOAD(axis->htim, SET_SPEED_500HZ);
-    __HAL_TIM_SET_COMPARE(axis->htim, axis->channel, (SET_SPEED_500HZ/2));
-
+    __HAL_TIM_SET_AUTORELOAD(axis->htim, SET_SPEED_500HZ_ARR);
+    __HAL_TIM_SET_COMPARE(axis->htim, axis->channel, (SET_SPEED_500HZ_ARR/2));
     axis->htim->Instance->EGR = TIM_EGR_UG;// ép buộc cập nhập giá trị mới vào vùng đệm
+    axis->current_speed = SET_SPEED_500HZ;
 }
 void MC_Stop(MC_Axis_t* axis)// mục đích Kích hoạt dừng tuyệt đối sau 100ms khi giảm tốc
 {
@@ -695,7 +695,7 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
         	axis->done = 0x00U;
             axis->busy = 0x00U;// lần sau mới cho busy về 0
             __HAL_TIM_SET_COMPARE(axis->htim, axis->channel, 0x00u);
-            __HAL_TIM_SET_AUTORELOAD(axis->htim, SET_FREQ_1KHZ);
+            __HAL_TIM_SET_AUTORELOAD(axis->htim, SET_SPEED_500HZ);
             axis->htim->Instance->EGR |= TIM_EGR_UG; // Ép cập nhật để ra 0V ngay lập tức
         }
         else if ( axis->current_pos == axis->target_pos || axis->ramp_time==0x00U)
@@ -728,24 +728,14 @@ void Update_Input(void)
 	Copy_data_output();
 	Copy_Gpio_Input();
 }
-//void Update_state_MC(void)
-//{
-//	__disable_irq();
-//	for(int i=0;i<NUM_AXIT_ROBOT;i++)
-//	{
-//
-//		*Rotbot_axis[i].current_pos_shodow = (uint16_t)Rotbot_axis[i].current_pos;
-//		*Rotbot_axis[i].current_speed_shadow = (uint16_t)Rotbot_axis[i].current_speed;
-//		*Rotbot_axis[i].axis_busy_shadow = (uint16_t)Rotbot_axis[i].busy;
-//	}
-//	__enable_irq();
-//}
+
 void  MC_Control_Interrupt(void)
 {
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)
 	{
 		Rotbot_controler(&Rotbot_axis[i],i);// thay đổi tần số ở đây
 	}
+	Task_Main_Controler();
 }
 
 uint8_t Set_Direction_OY(uint8_t status)

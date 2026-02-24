@@ -143,13 +143,13 @@ int main(void)
 				// 1. Lưu trạng thái ngắt cũ
 				uint32_t primask_bit = __get_PRIMASK();
 
-				// 2. Chặn ngắt để bảo vệ quá trình đọc
+				// 2. Chặn ngắt để bảo vệ quá trình đ�?c
 				__disable_irq();
 
 				// 3. Thực hiện copy dữ liệu một cách an toàn
 				memcpy(local_buf, ProcessBuf, leng_size);
-				is_new_frame = 0U; // Reset cờ báo
-				// 4. Khôi phục ngắt (đưa về trạng thái ban đầu)
+				is_new_frame = 0U; // Reset c�? báo
+				// 4. Khôi phục ngắt (đưa v�? trạng thái ban đầu)
 				__set_PRIMASK(primask_bit);
 				Modbus_Rtu_Run(local_buf,leng_size);
 			}
@@ -159,7 +159,7 @@ int main(void)
 		{
 			Task_Run_HMI();
 			Task_Run_Home();
-			Task_Main_Controler();
+//			Task_Main_Controler();
 		}
 		time_on=Delay_GetTimer(TID_TIMER_2ms);// cập nhập giá trị in out lên modbus
 		if(time_on==0x01)
@@ -243,7 +243,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 83;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 999;
+  htim1.Init.Period = 1999;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
@@ -383,7 +383,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 83;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 999;
+  htim3.Init.Period = 1999;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
