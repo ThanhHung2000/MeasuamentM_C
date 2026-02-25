@@ -262,7 +262,7 @@ void Emergency_Stop(void)
 }
 void Interrup_gpio_OX(void)
 {
-		GPIOA->ODR &=~(1<<9u);
+		GPIOC->ODR &=~(1<<7U);
         __HAL_TIM_SET_COMPARE(Rotbot_axis[AXIT_X_ROBOT].htim, Rotbot_axis[AXIT_X_ROBOT].channel, 0x00u);
         Rotbot_axis[AXIT_X_ROBOT].htim->Instance->EGR |= TIM_EGR_UG;// ép buộc cập nhập giá trị mới vào vùng đệm
         Rotbot_axis[AXIT_X_ROBOT].ramp_time=0x00U;
@@ -271,7 +271,7 @@ void Interrup_gpio_OX(void)
 }
 void Interrup_gpio_OY(void)
 {
-	GPIOC->ODR &=~(1<<7U);
+	GPIOA->ODR &=~(1<<9u);
     __HAL_TIM_SET_COMPARE(Rotbot_axis[AXIT_Y_ROBOT].htim, Rotbot_axis[AXIT_Y_ROBOT].channel, 0x00u);
     Rotbot_axis[AXIT_Y_ROBOT].htim->Instance->EGR |= TIM_EGR_UG;// ép buộc cập nhập giá trị mới vào vùng đệm
     Rotbot_axis[AXIT_Y_ROBOT].ramp_time=0x00U;
@@ -517,7 +517,7 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz )// thời điểm 
 	float deltaY=(float)( posy > Rotbot_axis[1].current_pos ? posy-Rotbot_axis[1].current_pos : Rotbot_axis[1].current_pos - posy);
 	float Lmax = (deltaX > deltaY) ? deltaX : deltaY;
 	MC_MoveAbsolute(&Rotbot_axis[2],posz,Rotbot_axis_target[2].target_speed);
-	if(Lmax < 1.0f) return Motor_Busy();
+	if(Lmax < 1.0f) return 0x00U;
 	uint16_t speed0 = Rotbot_axis_target[0].target_speed;
 	uint16_t speed1 = Rotbot_axis_target[1].target_speed;
 	float freq_max = (float)((speed0 > speed1) ? speed0 : speed1);
@@ -528,7 +528,7 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz )// thời điểm 
 	if(freqy > speed1) freqy=speed1;
 	MC_MoveAbsolute(&Rotbot_axis[0],posx,freqx);
 	MC_MoveAbsolute(&Rotbot_axis[1],posy,freqy);
-	return Motor_Busy();
+	return 0x00U;
 }
 void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
 {
@@ -713,15 +713,19 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
 }
 void Copy_Data_Target(void)
 {
+#ifdef MAIN_CONTROLLER
 	// 1. Lưu lại trạng thái ngắt hiện tại vào thanh ghi PRIMASK
 	uint32_t primask_bit = __get_PRIMASK();
 	__disable_irq(); // Chỉ tốn 1 chu kỳ máy
+#endif
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)
 	{
 			Rotbot_axis_target[i].target_position = Get_Holding_Registers(Rotbot_axis[i].indexaxis);
 			Rotbot_axis_target[i].target_speed=     Get_Holding_Registers(Rotbot_axis[i].indexaxis +1);
 	}
+#ifdef MAIN_CONTROLLER
 	__set_PRIMASK(primask_bit);
+#endif
 }
 void Update_Input(void)
 {
@@ -735,7 +739,9 @@ void  MC_Control_Interrupt(void)
 	{
 		Rotbot_controler(&Rotbot_axis[i],i);// thay đổi tần số ở đây
 	}
+#ifndef MAIN_CONTROLLER
 	Task_Main_Controler();
+#endif
 }
 
 uint8_t Set_Direction_OY(uint8_t status)

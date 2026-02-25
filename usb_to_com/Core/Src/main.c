@@ -159,7 +159,9 @@ int main(void)
 		{
 			Task_Run_HMI();
 			Task_Run_Home();
-//			Task_Main_Controler();
+#ifdef MAIN_CONTROLLER
+			Task_Main_Controler();
+#endif
 		}
 		time_on=Delay_GetTimer(TID_TIMER_2ms);// cập nhập giá trị in out lên modbus
 		if(time_on==0x01)

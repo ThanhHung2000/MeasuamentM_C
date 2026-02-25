@@ -20,7 +20,7 @@
 
 static int8_t fisrtbit=0x00U;
 static volatile uint8_t Emergency = 0;
-volatile static uint8_t home=0x00U;
+volatile static uint8_t home=0x01U;
 volatile static uint8_t home_done=0x01U;
 uint8_t start_run=0x00U;
 uint8_t stop_run=0x00U;
@@ -325,6 +325,7 @@ void Task_Run_Home(void)
 			Reset_position();
 			home=0x00U;
 			home_done=0x01U;
+			Main_controler->bits.Go_Home=0x00U;
 		}
 	}
 }
@@ -385,11 +386,11 @@ void Handle_Home(void)
 	if(home==0x00U)
 	{
 		home=0x01U;
-		Main_controler->bits.Go_Home=0x00U;
 	}
 }
 void Handle_Emergency(void)
 {
 	Emergency=0x01U;
+	Main_controler->bits.Emergency=0x00U;
 }
 
