@@ -647,7 +647,7 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
         case JOGGING_RUN:
 			{
 
-				if(++axis->timer_jogging1khz>=40U)
+				if(++axis->timer_jogging1khz>=50U)
 				{
 					axis->timer_jogging1khz=0x00U;
 					axis->ramp_time++;
@@ -709,7 +709,7 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
     }
 	*axis->current_pos_shodow = (uint16_t)(axis->current_pos);
 	*axis->current_speed_shadow = (uint16_t)(axis->current_speed);
-	*axis->axis_busy_shadow = (uint16_t)(axis->busy);
+	*axis->axis_busy_shadow = (uint16_t)(axis->state);
 }
 void Copy_Data_Target(void)
 {

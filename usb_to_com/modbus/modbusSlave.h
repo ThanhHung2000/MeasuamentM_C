@@ -16,7 +16,12 @@
 #define ILLEGAL_FUNCTION       0x01
 #define ILLEGAL_DATA_ADDRESS   0x02
 #define ILLEGAL_DATA_VALUE     0x03
-
+typedef enum {
+    PORT_NONE,
+    PORT_UART,
+    PORT_USB
+} ActivePort_t;
+extern volatile ActivePort_t active_port;
 uint8_t readHoldingRegs (uint8_t *Rx_Uart);
 uint8_t readInputRegs (uint8_t *Rx_Uart);
 uint8_t readCoils (uint8_t *Rx_Uart);

@@ -79,6 +79,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 	if(huart-> Instance == USART2)
 	{
 		memcpy(ProcessBuf, RxData, Size);//copy ra vùng đêm để xử lý
+		active_port = PORT_UART; // Ghi nhận là đang dùng UART
 #ifdef PROCES_IN_MAIN
 		// 2. Đặt flag để main xử lý
 		is_new_frame = 0x01U;
