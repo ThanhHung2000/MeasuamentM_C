@@ -26,27 +26,6 @@ volatile uint16_t Input_Registers_Database[LENG_MODBUS_DATA]={0,};
 Tab_Control_t* Main_controler = (Tab_Control_t*)&Coils_Database[0];
 Control_motor_t* Control_motor = (Control_motor_t*)&Coils_Database[1];
 Tray2D * Point2D_Tray1 = (Tray2D *)&Holding_Registers_Database[12];
-//void Update_Input_Register(uint8_t index, uint16_t toa_do,uint16_t toc_do, uint16_t state)
-//{
-//	if(Get_home_done()==0x00U)
-//	{
-//		Input_Registers_Database[index]=0x00U;
-//		Input_Registers_Database[index + 1]=0x00U;
-//		Input_Registers_Database[index + 2]=0x00U;
-//		return ;
-//	}
-//	Input_Registers_Database[index]=toa_do;
-//	Input_Registers_Database[index + 1]=toc_do;
-//	if(Input_Registers_Database[index + 2] != state)
-//	{
-//		Input_Registers_Database[index + 2]=state;
-//	}
-//
-//}
-//void Set_Input_Register(uint8_t index, uint16_t data)
-//{
-//	Input_Registers_Database[index]=data;
-//}
 uint8_t Get_Coild(uint8_t index)
 {
 	if(index>50) return 0x00U;

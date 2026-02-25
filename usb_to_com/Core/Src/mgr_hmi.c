@@ -7,8 +7,6 @@
 
 #include "RS232.h"
 #include "main.h"
-#include "delay.h"
-#include  "Common.h"
 #include "mgr_hmi.h"
 #include "drive.h"
 #include "modbusSlave.h"
@@ -20,8 +18,8 @@
 
 static int8_t fisrtbit=0x00U;
 static volatile uint8_t Emergency = 0;
-volatile static uint8_t home=0x01U;
-volatile static uint8_t home_done=0x01U;
+volatile static uint8_t home=0x00U;
+volatile static uint8_t home_done=0x00U;
 uint8_t start_run=0x00U;
 uint8_t stop_run=0x00U;
 static uint8_t state=0x00U;

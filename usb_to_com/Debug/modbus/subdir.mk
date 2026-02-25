@@ -5,23 +5,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../modbus/Common.c \
 ../modbus/RS232.c \
-../modbus/delay.c \
 ../modbus/modbusSlave.c \
 ../modbus/modbus_crc.c 
 
 OBJS += \
-./modbus/Common.o \
 ./modbus/RS232.o \
-./modbus/delay.o \
 ./modbus/modbusSlave.o \
 ./modbus/modbus_crc.o 
 
 C_DEPS += \
-./modbus/Common.d \
 ./modbus/RS232.d \
-./modbus/delay.d \
 ./modbus/modbusSlave.d \
 ./modbus/modbus_crc.d 
 
@@ -33,7 +27,7 @@ modbus/%.o modbus/%.su modbus/%.cyclo: ../modbus/%.c modbus/subdir.mk
 clean: clean-modbus
 
 clean-modbus:
-	-$(RM) ./modbus/Common.cyclo ./modbus/Common.d ./modbus/Common.o ./modbus/Common.su ./modbus/RS232.cyclo ./modbus/RS232.d ./modbus/RS232.o ./modbus/RS232.su ./modbus/delay.cyclo ./modbus/delay.d ./modbus/delay.o ./modbus/delay.su ./modbus/modbusSlave.cyclo ./modbus/modbusSlave.d ./modbus/modbusSlave.o ./modbus/modbusSlave.su ./modbus/modbus_crc.cyclo ./modbus/modbus_crc.d ./modbus/modbus_crc.o ./modbus/modbus_crc.su
+	-$(RM) ./modbus/RS232.cyclo ./modbus/RS232.d ./modbus/RS232.o ./modbus/RS232.su ./modbus/modbusSlave.cyclo ./modbus/modbusSlave.d ./modbus/modbusSlave.o ./modbus/modbusSlave.su ./modbus/modbus_crc.cyclo ./modbus/modbus_crc.d ./modbus/modbus_crc.o ./modbus/modbus_crc.su
 
 .PHONY: clean-modbus
 

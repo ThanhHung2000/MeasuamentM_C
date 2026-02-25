@@ -144,10 +144,8 @@ int main(void)
 			{
 				// 1. Lưu trạng thái ngắt cũ
 				uint32_t primask_bit = __get_PRIMASK();
-
 				// 2. Chặn ngắt để bảo vệ quá trình đ�?c
 				__disable_irq();
-
 				// 3. Thực hiện copy dữ liệu một cách an toàn
 				memcpy(local_buf, ProcessBuf, leng_size);
 				is_new_frame = 0U; // Reset c�? báo
