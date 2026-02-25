@@ -328,6 +328,10 @@ uint8_t Motor_Busy(void)// kiểm tra xem 3 trục robot có đã goàn toàn d�
 {
 	return (Rotbot_axis[0].busy || Rotbot_axis[1].busy || Rotbot_axis[2].busy) ;
 }
+uint8_t Motor_Z_Busy(void)
+{
+	return (Rotbot_axis[2].busy) ;
+}
 uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 {
 	//uint8_t result=0x00U;
@@ -516,18 +520,22 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz )// thời điểm 
 	float deltaX=(float)( posx > Rotbot_axis[0].current_pos ? posx-Rotbot_axis[0].current_pos : Rotbot_axis[0].current_pos - posx);
 	float deltaY=(float)( posy > Rotbot_axis[1].current_pos ? posy-Rotbot_axis[1].current_pos : Rotbot_axis[1].current_pos - posy);
 	float Lmax = (deltaX > deltaY) ? deltaX : deltaY;
-	MC_MoveAbsolute(&Rotbot_axis[2],posz,Rotbot_axis_target[2].target_speed);
-	if(Lmax < 1.0f) return 0x00U;
-	uint16_t speed0 = Rotbot_axis_target[0].target_speed;
-	uint16_t speed1 = Rotbot_axis_target[1].target_speed;
-	float freq_max = (float)((speed0 > speed1) ? speed0 : speed1);
-	int32_t freqx=(int32_t)((freq_max*deltaX/Lmax));
-	int32_t freqy=(int32_t)((freq_max*deltaY/Lmax));
+	MC_MoveAbsolute(&Rotbot_axis[2],posz,Rotbot_axis_target[2].target_speed);// di chuyển truc Z
+	if(Lmax < 1.0f) return 0x01U;
+	if(Motor_Z_Busy()==0x00U)
+	{
+		uint16_t speed0 = Rotbot_axis_target[0].target_speed;
+		uint16_t speed1 = Rotbot_axis_target[1].target_speed;
+		float freq_max = (float)((speed0 > speed1) ? speed0 : speed1);
+		int32_t freqx=(int32_t)((freq_max*deltaX/Lmax));
+		int32_t freqy=(int32_t)((freq_max*deltaY/Lmax));
 
-	if(freqx > speed0) freqx=speed0;
-	if(freqy > speed1) freqy=speed1;
-	MC_MoveAbsolute(&Rotbot_axis[0],posx,freqx);
-	MC_MoveAbsolute(&Rotbot_axis[1],posy,freqy);
+		if(freqx > speed0) freqx=speed0;
+		if(freqy > speed1) freqy=speed1;
+		MC_MoveAbsolute(&Rotbot_axis[0],posx,freqx);
+		MC_MoveAbsolute(&Rotbot_axis[1],posy,freqy);
+		return 0x01U;
+	}
 	return 0x00U;
 }
 void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
