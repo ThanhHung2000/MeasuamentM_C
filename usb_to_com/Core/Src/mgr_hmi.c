@@ -17,9 +17,10 @@
 
 
 static int8_t fisrtbit=0x00U;
-static volatile uint8_t Emergency = 0;
+static volatile uint8_t Emergency = 0x00U;
 volatile static uint8_t home=0x00U;
 volatile static uint8_t home_done=0x00U;
+volatile static uint8_t timer_Emergency_off=0x00U;
 uint8_t start_run=0x00U;
 uint8_t stop_run=0x00U;
 static uint8_t state=0x00U;
@@ -86,6 +87,7 @@ uint8_t Get_Go_home(void)
 {
 	return home;
 }
+
 uint16_t FindActiveBit(uint8_t *data,uint8_t numbyte)
 {
     for (uint8_t byteIdx = 0; byteIdx < numbyte; ++byteIdx)
@@ -148,30 +150,45 @@ void Task_Move_Oxis()
 void Set_Emergency_Stop()
 {
 	Emergency=0x01U;
+	timer_Emergency_off=0x00U;
+}
+uint8_t Get_Emergency_Stop(void)
+{
+	return Emergency;
 }
 void Task_Run_HMI(void)
 {
-	static uint8_t timer_Emergency_off=0x00U;
 	if(Emergency == 0x01U )
 	{
 		Emergency_Stop();
-		if(Get_State_Sensor(0x003U)==0x00U)
+		if(Get_State_Sensor(0x03U)==0x00U)
 		{
-			if(++timer_Emergency_off>=10U)// sau 10ms nhả nút Emergency thì về home
+			timer_Emergency_off++;
+			if(timer_Emergency_off>=10U)// sau 10ms nhả nút Emergency thì về home
 			{
 				timer_Emergency_off=0x00U;
 				Emergency=0x00U;
-				home=0x01U;
+				if(home==0x00U)
+				{
+					home=0x01U;
+				}
 			}
-
 		}
+		else
+		{
+			timer_Emergency_off=0x00U;
+		}
+		return;
+	}
+	if(home==0x01U || Emergency == 0x01U)
+	{
 		return;
 	}
 	Task_Move_Oxis();
 }
 void Task_Main_Controler(void)
 {
-	if(home==0x01U || Emergency == 0x01U) return;
+	if(home != 0x00U || Emergency == 0x01U) return;// vì home bằng 1 hoặc 2
 	uint8_t current_main = Main_controler->all;
 	fisrtbit = __builtin_ffs(current_main)-1;
 	if(fisrtbit >= 0)
@@ -312,9 +329,12 @@ void Scanning_Task(void)
 }
 void Task_Run_Home(void)
 {
-	if(Emergency == 0x01U) return;
 	Gpio_input();
-	if(home!=0x00u)
+	if(Emergency == 0x01U)
+	{
+		return;
+	}
+	if(home != 0x00u)// vì home bị thay đổi sang 1 và 2
 	{
 		start_run=0x00U;
 		state=0X00u;// trạng thái để đưa z xuống con hàng cần reset khi về home
@@ -366,7 +386,10 @@ void Handle_Down(uint8_t data)
 
 void Handle_Set(void)
 {
-	if(Get_home_done()==0x00U || (Get_Go_home()==0x01U) ) return ;//home!=0x00u
+	if((Get_home_done()==0x00U) || (Get_Go_home() !=0x00U ) )
+	{
+		return ;//home!=0x00u VÌ HOME BANG 1 HOAC 2
+	}
 	Copy_Data_Target();
 	// lấy dữ liệu từ 4x Holding_Registers_Database để làm target
 	if(MC_MoveLinear(Rotbot_axis_target[0].target_position,Rotbot_axis_target[1].target_position,Rotbot_axis_target[2].target_position)==0x01U)
@@ -377,7 +400,7 @@ void Handle_Set(void)
 }
 void Handle_Home(void)
 {
-	if(home==0x00U)
+	if(home==0x00U)// PHẢI KIỂM TRA BẰNG 0 MỚI GÁN BẰNG 1 VÌ MAIN THAY ĐỔI SANG 2
 	{
 		home=0x01U;
 	}
@@ -386,5 +409,6 @@ void Handle_Emergency(void)
 {
 	Emergency=0x01U;
 	Main_controler->bits.Emergency=0x00U;
+	timer_Emergency_off=0x00U;
 }
 

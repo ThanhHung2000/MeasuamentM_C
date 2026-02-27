@@ -152,7 +152,11 @@ void Task_gpio_output(void)// copy dữ liệu sang địa chỉ 10000
 }
 uint8_t Get_State_Sensor(uint8_t channel)
 {
-	return sensor.Sensor_State[channel];
+	if(channel<NUM_SENSORS)
+	{
+		return sensor.Sensor_State[channel];
+	}
+	return 0xFFU;// giá trị lỗi
 }
 
 void Out_put_Xilanh1(uint8_t status)

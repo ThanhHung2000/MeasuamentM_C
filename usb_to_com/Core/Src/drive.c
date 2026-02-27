@@ -547,9 +547,12 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz )// thời điểm 
 	}
 	return 0x00U;
 }
-void MC_MoveHandle(uint8_t axis,uint8_t status, int dir)
+void MC_MoveHandle(uint8_t axis,uint8_t status, uint8_t dir)
 {
-	if((Get_home_done()==0x00U) || (Get_Go_home()==0x01U)) return ;
+	if((Get_home_done()==0x00U) || (Get_Go_home()==0x01U) || Get_Emergency_Stop()==0x01U)
+	{
+		return ;
+	}
 	switch(status)
 	{
 		case STATUS_JOGGING_OXIS:// jogging
@@ -693,7 +696,7 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
 			__HAL_TIM_SET_COMPARE(axis->htim, axis->channel, (new_arr / 2));
     	}
         curent_counter=axis->htim_counter->Instance->CNT;
-        if(axis->direction == 0x00)
+        if(axis->direction == 0x00U)
         {
                 axis->current_pos += ((curent_counter-axis->counter_pos));
                 axis->current_pos +=axis->offset;
