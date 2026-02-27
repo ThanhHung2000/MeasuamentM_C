@@ -55,26 +55,26 @@ uint32_t Gpio_read_input(void)
 {
 	uint32_t idr =GPIOC->IDR;
 	uint32_t input=0x00U;
-	if(idr & GPIO_PIN_0) input |= (1<<0);
-	if(idr & GPIO_PIN_1) input |= (1<<1);
-	if(idr & GPIO_PIN_2) input |= (1<<2);
-	if(idr & GPIO_PIN_3) input |= (1<<3);
-	if(idr & GPIO_PIN_4) input |= (1<<4);
-	if(idr & GPIO_PIN_5) input |= (1<<5);
+	if(idr & GPIO_PIN_0) input |= (1<<0U);
+	if(idr & GPIO_PIN_1) input |= (1<<1U);
+	if(idr & GPIO_PIN_2) input |= (1<<2U);
+	if(idr & GPIO_PIN_3) input |= (1<<3U);
+	if(idr & GPIO_PIN_4) input |= (1<<4U);
+	if(idr & GPIO_PIN_5) input |= (1<<5U);
 	idr =GPIOB->IDR;
-	if(idr & GPIO_PIN_0) input |= (1<<6);
-	if(idr & GPIO_PIN_1) input |= (1<<7);
-	if(idr & GPIO_PIN_12) input |= (1<<17);
+	if(idr & GPIO_PIN_0) input |= (1<<9U);//6
+	if(idr & GPIO_PIN_1) input |= (1<<7U);
+	if(idr & GPIO_PIN_12) input |= (1<<17U);
 	idr =GPIOE->IDR;
-	if(idr & GPIO_PIN_7) input |= (1<<8);
-	if(idr & GPIO_PIN_8) input |= (1<<9);
-	if(idr & GPIO_PIN_9) input |= (1<<10);
-	if(idr & GPIO_PIN_10) input |= (1<<11);
-	if(idr & GPIO_PIN_11) input |= (1<<12);
-	if(idr & GPIO_PIN_12) input |= (1<<13);
-	if(idr & GPIO_PIN_13) input |= (1<<14);
-	if(idr & GPIO_PIN_14) input |= (1<<15);
-	if(idr & GPIO_PIN_15) input |= (1<<16);
+	if(idr & GPIO_PIN_7) input |= (1<<8U);
+	if(idr & GPIO_PIN_8) input |= (1<<6U);//9
+	if(idr & GPIO_PIN_9) input |= (1<<10U);
+	if(idr & GPIO_PIN_10) input |= (1<<11U);
+	if(idr & GPIO_PIN_11) input |= (1<<12U);
+	if(idr & GPIO_PIN_12) input |= (1<<13U);
+	if(idr & GPIO_PIN_13) input |= (1<<14U);
+	if(idr & GPIO_PIN_14) input |= (1<<15U);
+	if(idr & GPIO_PIN_15) input |= (1<<16U);
 	return input;
 }
 

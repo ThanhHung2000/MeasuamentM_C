@@ -530,7 +530,10 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz )// thời điểm 
 	float deltaY=(float)( posy > Rotbot_axis[1].current_pos ? posy-Rotbot_axis[1].current_pos : Rotbot_axis[1].current_pos - posy);
 	float Lmax = (deltaX > deltaY) ? deltaX : deltaY;
 	MC_MoveAbsolute(&Rotbot_axis[2],posz,Rotbot_axis_target[2].target_speed);// di chuyển truc Z
-	if(Lmax < 1.0f) return 0x01U;
+	if(Lmax < 1.0f)
+	{
+		return 0x01U;
+	}
 	if(Motor_Z_Busy()==0x00U)
 	{
 		uint16_t speed0 = Rotbot_axis_target[0].target_speed;
@@ -545,7 +548,7 @@ uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz )// thời điểm 
 		MC_MoveAbsolute(&Rotbot_axis[1],posy,freqy);
 		return 0x01U;
 	}
-	return 0x00U;
+	return 0x02U;// trường hợp này là Z dang chạy mà X,Y đợi
 }
 void MC_MoveHandle(uint8_t axis,uint8_t status, uint8_t dir)
 {
@@ -557,7 +560,7 @@ void MC_MoveHandle(uint8_t axis,uint8_t status, uint8_t dir)
 	{
 		case STATUS_JOGGING_OXIS:// jogging
 		{
-			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),5000U);
+			MC_MoveAbsolute(&Rotbot_axis[axis],dir*(Rotbot_axis[axis].max_axis),3000U);
 			if(Rotbot_axis[axis].timer_jogging1khz==0x00U) Rotbot_axis[axis].jogging =0x01U;
 		}
 		break;
@@ -567,11 +570,11 @@ void MC_MoveHandle(uint8_t axis,uint8_t status, uint8_t dir)
 			{
 				int32_t value = (Rotbot_axis[axis].current_pos > 5U) ? Rotbot_axis[axis].current_pos - 5U : 0x00U;
 
-				MC_MoveAbsolute(&Rotbot_axis[axis],value,5000U);
+				MC_MoveAbsolute(&Rotbot_axis[axis],value,3000U);
 			}
 			else
 			{
-				MC_MoveAbsolute(&Rotbot_axis[axis],Rotbot_axis[axis].current_pos + 5U,5000U);
+				MC_MoveAbsolute(&Rotbot_axis[axis],Rotbot_axis[axis].current_pos + 5U,3000U);
 			}
 		}
 		break;
@@ -602,14 +605,13 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
 			{
 				axis->state =JOGGING_RUN;
 				axis->jogging=0x00U;
-
+				axis->ramp_time=0x00U;
 				axis->timer_jogging1khz=0x01U;
 			}
 			else
 			{
 				axis->state = ACCELERATING;
 			}
-
 			axis->ramp_time++;
 		}
 		break;
@@ -667,12 +669,11 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
         case JOGGING_RUN:
 			{
 
-				if(++axis->timer_jogging1khz>=50U)
+				if(++axis->timer_jogging1khz>=80U)
 				{
 					axis->timer_jogging1khz=0x00U;
-					axis->ramp_time++;
 					axis->current_speed = SET_SPEED_500HZ + (uint32_t)((axis->accel)*triangle_array[axis->ramp_time]);
-
+					axis->ramp_time++;
 					if(axis->ramp_time>=TIME_RAMPING)
 					{
 						axis->ramp_time --;
@@ -680,7 +681,6 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
 						axis->state = CONSTANT_VEL;
 					}
 				}
-
 			}
 			break;
         default:
