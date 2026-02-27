@@ -17,6 +17,8 @@
 // Tính theo công thức: (Fmax - 1000) / (200 * 401)
 // với jerk_table[0] tương ứng với Fmax=1000 Hz
 // với jerk_table[49] tương ứng với Fmax=50000 Hz
+
+volatile uint32_t max_ticks_1ms=0x00U;
 const float jerk_table[50] = {
 	    0.000000, 0.198020, 0.396040, 0.594059, 0.792079, 0.990099, 1.188119, 1.386139, 1.584158, 1.782178,
 	    1.980198, 2.178218, 2.376238, 2.574257, 2.772277, 2.970297, 3.168317, 3.366337, 3.564356, 3.762376,
@@ -37,6 +39,13 @@ uint8_t Set_Direction_OY(uint8_t status);
 uint8_t Set_Direction_OZ(uint8_t status);
 volatile static  MC_Axis_t Rotbot_axis[NUM_AXIT_ROBOT];
 volatile Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT]={0,};
+
+void Debug_init(void)
+{
+	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+	DWT->CYCCNT = 0;
+	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+}
 void Init_Timer_chanal(void)
 {
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
@@ -743,6 +752,7 @@ void Update_Input(void)
 
 void  MC_Control_Interrupt(void)
 {
+	uint32_t start_tick = DWT->CYCCNT; // Lấy số tick lúc bắt đầu
 	for(int i=0;i<NUM_AXIT_ROBOT;i++)
 	{
 		Rotbot_controler(&Rotbot_axis[i],i);// thay đổi tần số ở đây
@@ -750,6 +760,11 @@ void  MC_Control_Interrupt(void)
 #ifndef MAIN_CONTROLLER
 	Task_Main_Controler();
 #endif
+	uint32_t end_tick = DWT->CYCCNT;   // Lấy số tick lúc kết thúc
+	uint32_t execution_ticks = end_tick - start_tick;
+	if (execution_ticks > max_ticks_1ms) {
+		max_ticks_1ms = execution_ticks; // Lưu lại kỷ lục chậm nhất
+	}
 }
 
 uint8_t Set_Direction_OY(uint8_t status)

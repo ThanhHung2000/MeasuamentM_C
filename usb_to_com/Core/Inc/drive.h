@@ -99,7 +99,5 @@ void Update_Input(void);
 void Update_state_MC(void);
 void Copy_Data_Target(void);
 extern volatile Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT];
-//uint8_t MC_MoveLinear(int32_t posx,int32_t posy,int32_t posz,float freq_max );
-
-//void MC_MoveHandle(uint8_t axis,uint8_t status, int dir);
+void Debug_init(void);
 #endif /* INC_DRIVE_H_ */

@@ -79,6 +79,7 @@ static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 uint8_t time_on=0x00;
 uint8_t local_buf[RX_BUF_SIZE];
+uint32_t max_ticks_main=0x00U;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -131,7 +132,9 @@ int main(void)
   Delay_SetTimer(TID_TIMER_1ms,0x01U);
   Delay_SetTimer(TID_TIMER_2ms,0x02U);
   HMI_Init();
+  Debug_init();
   HAL_TIM_Base_Start_IT(&htim7);
+//  GPIOA ->ODR |=(1<<10U);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -142,6 +145,7 @@ int main(void)
 		#ifdef PROCES_IN_MAIN
 			if(is_new_frame==0x01U)
 			{
+				uint32_t start_tick = DWT->CYCCNT; // Lấy số tick lúc bắt đầu
 				// 1. Lưu trạng thái ngắt cũ
 				uint32_t primask_bit = __get_PRIMASK();
 				// 2. Chặn ngắt để bảo vệ quá trình đ�?c
@@ -152,6 +156,11 @@ int main(void)
 				// 4. Khôi phục ngắt (đưa v�? trạng thái ban đầu)
 				__set_PRIMASK(primask_bit);
 				Modbus_Rtu_Run(local_buf,leng_size);
+				uint32_t end_tick = DWT->CYCCNT;   // Lấy số tick lúc kết thúc
+				uint32_t execution_ticks = end_tick - start_tick;
+				if (execution_ticks > max_ticks_main) {
+					max_ticks_main = execution_ticks; // Lưu lại kỷ lục chậm nhất
+				}
 			}
 		#endif
 		time_on=Delay_GetTimer(TID_TIMER_1ms);
@@ -748,7 +757,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, DIR_TIM3_Pin|DIR_TIM8_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, DIR_TIM1_Pin|DIR_NO_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, DIR_TIM1_Pin|GPIO_PIN_10|DIR_NO_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, O1_xilanh1_Pin|O2_xilanh2_Pin|O3_vacum_hut1_Pin|O4_vacum_hut2_Pin
@@ -815,6 +824,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(DIR_TIM1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA10 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : DIR_NO_Pin */
   GPIO_InitStruct.Pin = DIR_NO_Pin;

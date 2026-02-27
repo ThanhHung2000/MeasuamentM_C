@@ -16,6 +16,7 @@ uint8_t TxData[RX_BUF_SIZE];
 volatile uint8_t is_new_frame = 0;
 volatile uint16_t leng_size = 0U;
 uint8_t ProcessBuf[RX_BUF_SIZE];
+volatile uint32_t max_ticks_uart=0x00U;
 
 void HMI_Init(void)
 {
@@ -78,6 +79,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	if(huart-> Instance == USART2)
 	{
+		uint32_t start_tick = DWT->CYCCNT; // Lấy số tick lúc bắt đầu
 		memcpy(ProcessBuf, RxData, Size);//copy ra vùng đêm để xử lý
 		active_port = PORT_UART; // Ghi nhận là đang dùng UART
 #ifdef PROCES_IN_MAIN
@@ -89,6 +91,11 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 #endif
 		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, RxData, RX_BUF_SIZE);
 		__HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT); // Khóa lần 1 (Khởi tạo)
+		uint32_t end_tick = DWT->CYCCNT;   // Lấy số tick lúc kết thúc
+		uint32_t execution_ticks = end_tick - start_tick;
+		if (execution_ticks > max_ticks_uart) {
+			max_ticks_uart = execution_ticks; // Lưu lại kỷ lục chậm nhất
+		}
 	}
 }
 
