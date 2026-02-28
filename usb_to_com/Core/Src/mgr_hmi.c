@@ -18,9 +18,10 @@
 
 static int8_t fisrtbit=0x00U;
 static volatile uint8_t Emergency = 0x00U;
-volatile static uint8_t home=0x00U;
-volatile static uint8_t home_done=0x00U;
-volatile static uint8_t timer_Emergency_off=0x00U;
+static volatile uint8_t home=0x00U;
+static volatile uint8_t home_done=0x00U;
+static volatile  uint8_t timer_Emergency_off=0x00U;
+volatile uint8_t hand_set=0x00U;
 uint8_t start_run=0x00U;
 uint8_t stop_run=0x00U;
 static uint8_t state=0x00U;
@@ -397,10 +398,11 @@ void Handle_Set(void)
 	if(result==0x01U)
 	{
 		Main_controler->bits.SetPoint=0x00U;
+		hand_set=0x00U;
 	}
 	else if(result == 0x02U)
 	{
-		Main_controler->bits.SetPoint=0x01U;
+		hand_set=0x01U;
 	}
 
 }

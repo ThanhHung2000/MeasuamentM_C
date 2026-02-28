@@ -19,7 +19,7 @@ void Task_Run_Home(void);
 void Init_hmi(void);
 void Set_Emergency_Stop();
 uint8_t Get_Emergency_Stop(void);
-
+extern volatile uint8_t hand_set;
 uint8_t Get_home_done(void);
 uint8_t Get_Go_home(void);
 #endif /* INC_MGR_HMI_H_ */

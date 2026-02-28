@@ -13,6 +13,7 @@
 #include"dvr_gpio.h"
 #include "mgr_hmi.h"
 #include "modbusSlave.h"
+#include "RS232.h"
 // Mảng chứa 46 giá trị Jerk (đơn vị: Hz/ms^2)
 // Tính theo công thức: (Fmax - 1000) / (200 * 401)
 // với jerk_table[0] tương ứng với Fmax=1000 Hz
@@ -271,7 +272,7 @@ void Emergency_Stop(void)
 }
 void Interrup_gpio_OX(void)
 {
-		GPIOC->ODR &=~(1<<7U);
+//		GPIOC->ODR &=~(1<<7U);
         __HAL_TIM_SET_COMPARE(Rotbot_axis[AXIT_X_ROBOT].htim, Rotbot_axis[AXIT_X_ROBOT].channel, 0x00u);
         Rotbot_axis[AXIT_X_ROBOT].htim->Instance->EGR |= TIM_EGR_UG;// ép buộc cập nhập giá trị mới vào vùng đệm
         Rotbot_axis[AXIT_X_ROBOT].ramp_time=0x00U;
@@ -280,7 +281,7 @@ void Interrup_gpio_OX(void)
 }
 void Interrup_gpio_OY(void)
 {
-	GPIOA->ODR &=~(1<<9u);
+//	GPIOA->ODR &=~(1<<9u);
     __HAL_TIM_SET_COMPARE(Rotbot_axis[AXIT_Y_ROBOT].htim, Rotbot_axis[AXIT_Y_ROBOT].channel, 0x00u);
     Rotbot_axis[AXIT_Y_ROBOT].htim->Instance->EGR |= TIM_EGR_UG;// ép buộc cập nhập giá trị mới vào vùng đệm
     Rotbot_axis[AXIT_Y_ROBOT].ramp_time=0x00U;
@@ -289,7 +290,7 @@ void Interrup_gpio_OY(void)
 }
 void Interrup_gpio_OZ(void)
 {
-	GPIOC->ODR &=~(1<<9U);
+//	GPIOC->ODR &=~(1<<9U);
 	__HAL_TIM_SET_COMPARE(Rotbot_axis[AXIT_Z_ROBOT].htim, Rotbot_axis[AXIT_Z_ROBOT].channel, 0x00u);
     Rotbot_axis[AXIT_Z_ROBOT].htim->Instance->EGR |= TIM_EGR_UG;// ép buộc cập nhập giá trị mới vào vùng đệm
     Rotbot_axis[AXIT_Z_ROBOT].ramp_time=0x00U;
@@ -348,7 +349,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 	static uint8_t onetime=0x00U;
 	static uint8_t step=0x00U;
 	static uint8_t time=0x00U;
-	if( *home_tep == 0x01)
+	if( *home_tep == 0x01U)
 	{
 		step=0x01U;
 		*home_tep = 0x02U;
@@ -371,7 +372,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 					{
 						Rotbot_axis[2].current_pos=13000U;
 					}
-					if(Get_State_Sensor(AXIT_Z_ROBOT)==0x00U) MC_MoveAbsolute(&Rotbot_axis[2],0x00U,3000U);// di chuyển về home
+					if(Get_State_Sensor(AXIT_Z_ROBOT)==0x00U) MC_MoveAbsolute(&Rotbot_axis[2],0x00U,2000U);// di chuyển về home
 					if(++counter_100 >= 2U)
 					{
 						onetime=0x01U;
@@ -393,6 +394,52 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 		}
 		break;
 		case 0x02U:
+		{
+			// step 2 : về home max 2 trục 550cm và 280cm, NẾU chạm home ở ngắt ngoài thì cho về MC_Stop
+			if(onetime==0x00U)
+			{
+				if(Motor_Busy()==0x00U)
+				{
+					if(Get_home_done())
+					{
+						Rotbot_axis[0].current_pos +=1000U;
+						Rotbot_axis[1].current_pos +=1000U;
+						Rotbot_axis[2].current_pos +=1000U;
+					}
+					else
+					{
+						Rotbot_axis[0].current_pos =5000U;
+						Rotbot_axis[1].current_pos =5000U;
+						Rotbot_axis[2].current_pos +=200U;
+					}
+					if(Get_State_Sensor(AXIT_X_ROBOT) ==0x00U ) MC_MoveAbsolute(&Rotbot_axis[0],0x00U,3000U);
+					if(Get_State_Sensor(AXIT_Y_ROBOT) ==0x00U) MC_MoveAbsolute(&Rotbot_axis[1],0x00U,1500U);
+					if(Get_State_Sensor(AXIT_Z_ROBOT) ==0x00U) MC_MoveAbsolute(&Rotbot_axis[2],0x00U,2000U);
+				    if(++counter_100 > 1U)
+					{
+				    	onetime=0x01U;
+				    	counter_100=0x00U;
+					}
+				}
+
+			}
+			if(Get_State_Sensor(AXIT_X_ROBOT)) MC_MoveHomeAbsolute(&Rotbot_axis[AXIT_X_ROBOT]);// NẾU K CHẠM HOME LÀ LỖI
+			if(Get_State_Sensor(AXIT_Y_ROBOT)) MC_MoveHomeAbsolute(&Rotbot_axis[AXIT_Y_ROBOT]);
+			if(Get_State_Sensor(AXIT_Z_ROBOT)) MC_MoveHomeAbsolute(&Rotbot_axis[AXIT_Z_ROBOT]);
+			if(Motor_Busy()==0x00U)
+			{
+				if(++time>=5U)
+				{
+					time =0x00U;
+					step=0x03U;
+					onetime=0x00U;
+				}
+
+			}
+			else time=0x00U;
+		}
+		break;
+		case 0x03U:
 		{
 			// step 2 : về home max 2 trục 550cm và 280cm, NẾU chạm home ở ngắt ngoài thì cho về MC_Stop
 			if(onetime==0x00U)
@@ -430,7 +477,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 				if(++time>=5U)
 				{
 					time =0x00U;
-					step=0x03U;
+					step=0x04U;
 					onetime=0x00U;
 				}
 
@@ -438,7 +485,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			else time=0x00U;
 		}
 		break;
-		case 0x03U:// đi xa khoảng 5CM mỗi trục
+		case 0x04U:// đi xa khoảng 5CM mỗi trục
 		{
 
 			if(onetime==0x00U)
@@ -457,7 +504,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 				if(++time>=5U)
 				{
 					time =0x00U;
-					step=0x04U;
+					step=0x05U;
 					onetime=0x00U;
 					Rotbot_axis[0].current_pos +=1000U;
 					Rotbot_axis[1].current_pos +=1000U;
@@ -467,7 +514,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 			else time=0x00U;
 		}
 		break;
-		case 0x04U://
+		case 0x05U://
 		{
 			// step 2 : về home max 2 trục 550cm và 280cm, NẾU chạm home ở ngắt ngoài thì cho về MC_Stop
 			if(onetime==0x00U)
@@ -489,14 +536,14 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 				{
 					time =0x00U;
 					onetime=0x00U;
-					step=0x05U;
+					step=0x06U;
 					Reset_position();
 				}
 			}
 			else time=0x00U;
 		}
 		break;
-		case 0x05U://
+		case 0x06U:// đi ra 1 đoạn 200 xung
 		{
 			if(onetime==0x00U)
 			{
@@ -657,13 +704,13 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
 			}
         	break;
         case HOME_STOPPING:
-			if(axis->current_pos > 1500U)
+			if(axis->current_pos > 3000U)
 			{
 				axis->current_speed =SET_SPEED_1000HZ;
 			}
 			else
 			{
-				axis->current_speed =SET_SPEED_500HZ;
+				axis->current_speed =SET_SPEED_200HZ;
 			}
         	break;
         case JOGGING_RUN:
@@ -689,7 +736,7 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
     // CẬP NHẬT PHẦN CỨNG
     if ( axis->busy==0x01)
     {
-    	if(axis->current_speed >= SET_SPEED_500HZ)
+    	if(axis->current_speed >= SET_SPEED_200HZ)
     	{
 			 new_arr = (uint32_t)(1000000U / (uint32_t)(axis->current_speed)); // Giả sử Clock Timer 1MHz
 			__HAL_TIM_SET_AUTORELOAD(axis->htim, (new_arr));
@@ -762,6 +809,10 @@ void  MC_Control_Interrupt(void)
 	}
 #ifndef MAIN_CONTROLLER
 	Task_Main_Controler();
+	if(hand_set == 0x01U)
+	{
+		Main_controler->bits.SetPoint=0x01U;
+	}
 #endif
 	uint32_t end_tick = DWT->CYCCNT;   // Lấy số tick lúc kết thúc
 	uint32_t execution_ticks = end_tick - start_tick;

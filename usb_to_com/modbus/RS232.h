@@ -9,7 +9,7 @@
 #ifndef INC_RS232_H_
 #define INC_RS232_H_
 #define RX_BUF_SIZE 128U
-//#define PROCES_IN_MAIN
+#define PROCES_IN_MAIN
 extern UART_HandleTypeDef huart2;
 extern volatile uint8_t is_new_frame;
 extern volatile uint16_t leng_size ;
