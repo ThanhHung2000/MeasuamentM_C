@@ -333,6 +333,10 @@ void Task_Run_Home(void)
 	Gpio_input();
 	if(Emergency == 0x01U)
 	{
+		if(home!=0x00U)
+		{
+			home=0x01U;
+		}
 		return;
 	}
 	if(home != 0x00u)// vì home bị thay đổi sang 1 và 2

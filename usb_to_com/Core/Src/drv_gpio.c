@@ -70,8 +70,8 @@ uint32_t Gpio_read_input(void)
 	if(idr & GPIO_PIN_8) input |= (1<<6U);//9
 	if(idr & GPIO_PIN_9) input |= (1<<10U);
 	if(idr & GPIO_PIN_10) input |= (1<<11U);
-	if(idr & GPIO_PIN_11) input |= (1<<12U);
-	if(idr & GPIO_PIN_12) input |= (1<<13U);
+	if(idr & GPIO_PIN_11) input |= (1<<12U);//truc X
+	if(idr & GPIO_PIN_12) input |= (1<<13U);//truc Y
 	if(idr & GPIO_PIN_13) input |= (1<<14U);
 	if(idr & GPIO_PIN_14) input |= (1<<15U);
 	if(idr & GPIO_PIN_15) input |= (1<<16U);

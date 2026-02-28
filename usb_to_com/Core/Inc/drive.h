@@ -48,6 +48,7 @@ typedef struct __attribute__((packed)) {
     uint32_t channel;
     uint32_t channel_counter;
     uint8_t (* Set_Direction_Pin)(uint8_t);
+    uint8_t (* Get_Ready_Oxis)(void);
     // Thông số chuyển động
     volatile int32_t current_pos;   // Vị trí hiện tại (số xung)
     volatile int32_t target_pos;    // Vị trí đích

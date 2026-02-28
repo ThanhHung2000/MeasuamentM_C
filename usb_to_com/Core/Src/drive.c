@@ -38,6 +38,9 @@ const float triangle_array[TIME_RAMPING] = {
 uint8_t Set_Direction_OX(uint8_t status);
 uint8_t Set_Direction_OY(uint8_t status);
 uint8_t Set_Direction_OZ(uint8_t status);
+uint8_t Get_Ready_Oxis_X(void);
+uint8_t Get_Ready_Oxis_Y(void);
+uint8_t Get_Ready_Oxis_Z(void);
 volatile static  MC_Axis_t Rotbot_axis[NUM_AXIT_ROBOT];
 volatile Axis_Config_t Rotbot_axis_target[NUM_AXIT_ROBOT]={0,};
 
@@ -91,6 +94,7 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_X_ROBOT].channel=TIM_CHANNEL_1;//TIM_CHANNEL_1
 	Rotbot_axis[AXIT_X_ROBOT].channel_counter=TIM_CHANNEL_1;//TIM_CHANNEL_1
 	Rotbot_axis[AXIT_X_ROBOT].Set_Direction_Pin=Set_Direction_OX;//Set_Direction_OY
+	Rotbot_axis[AXIT_X_ROBOT].Get_Ready_Oxis=Get_Ready_Oxis_X;
 	Rotbot_axis[AXIT_X_ROBOT].max_axis=MAX_Axis_OX;//&Rotbot_axis_target[AXIT_X_ROBOT].max_limit;
 	Rotbot_axis[AXIT_X_ROBOT].indexaxis=0x00U;
 
@@ -103,6 +107,7 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_Y_ROBOT].channel=TIM_CHANNEL_1;//TIM_CHANNEL_1
 	Rotbot_axis[AXIT_Y_ROBOT].channel_counter=TIM_CHANNEL_2;//TIM_CHANNEL_2
 	Rotbot_axis[AXIT_Y_ROBOT].Set_Direction_Pin=Set_Direction_OY;//Set_Direction_OX
+	Rotbot_axis[AXIT_Y_ROBOT].Get_Ready_Oxis=Get_Ready_Oxis_Y;
 	Rotbot_axis[AXIT_Y_ROBOT].max_axis=MAX_Axis_OY;//&Rotbot_axis_target[AXIT_Y_ROBOT].max_limit;
 	Rotbot_axis[AXIT_Y_ROBOT].indexaxis=0x03U;
 
@@ -115,6 +120,7 @@ void Robot_Init(void)
 	Rotbot_axis[AXIT_Z_ROBOT].channel=TIM_CHANNEL_3;
 	Rotbot_axis[AXIT_Z_ROBOT].channel_counter=TIM_CHANNEL_1;
 	Rotbot_axis[AXIT_Z_ROBOT].Set_Direction_Pin=Set_Direction_OZ;
+	Rotbot_axis[AXIT_Z_ROBOT].Get_Ready_Oxis=Get_Ready_Oxis_Z;
 	Rotbot_axis[AXIT_Z_ROBOT].max_axis=MAX_Axis_OZ;//&Rotbot_axis_target[AXIT_Z_ROBOT].max_limit;
 	Rotbot_axis[AXIT_Z_ROBOT].indexaxis=0x06U;
 	Rotbot_axis[AXIT_Z_ROBOT].current_pos_shodow =&Input_Registers_Database[6];
@@ -704,7 +710,7 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
 			}
         	break;
         case HOME_STOPPING:
-			if(axis->current_pos > 3000U)
+			if(axis->current_pos > 1400U)
 			{
 				axis->current_speed =SET_SPEED_1000HZ;
 			}
@@ -755,6 +761,14 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
         }
         axis->offset=0x00U;
         axis->counter_pos = curent_counter;
+        if(axis->Get_Ready_Oxis()==0x00U)
+        {
+            axis->current_speed = 0x00U;
+            if(axis->state != AXIS_ERROR) axis->state = AXIS_ERROR;
+            axis->done = 0x01U;
+            axis->ramp_time=0x00U;
+            axis->fulse_stop=0x00U;
+        }
         if(axis->done == 0x01U)
         {
         	axis->homing=0x00U;
@@ -838,6 +852,18 @@ uint8_t Set_Direction_OZ(uint8_t status)
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_9, status );
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_9, status );
 	return HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_9) > 0x00U ? 0x01U:0x00U;
+}
+uint8_t Get_Ready_Oxis_X(void)
+{
+	return Get_State_Sensor(12U);
+}
+uint8_t Get_Ready_Oxis_Y(void)
+{
+	return Get_State_Sensor(13U);
+}
+uint8_t Get_Ready_Oxis_Z(void)
+{
+	return 0x01U;
 }
 uint8_t Reset_Errow_Axis(void)
 {
