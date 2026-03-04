@@ -501,7 +501,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 				Rotbot_axis[2].current_pos=0x00U;
 				MC_MoveAbsolute(&Rotbot_axis[0],3000U,4000U);
 				MC_MoveAbsolute(&Rotbot_axis[1],3000U,4000U);
-				MC_MoveAbsolute(&Rotbot_axis[2],3000U,4000U);
+				MC_MoveAbsolute(&Rotbot_axis[2],3000U,4000U);// nên chuyển sang 1500 thôi
 				onetime=0x01U;
 			}
 			if(Motor_Busy()==0x00U)
