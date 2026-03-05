@@ -23,25 +23,19 @@
 #define AXIT_Y_ROBOT   0x01
 #define AXIT_Z_ROBOT   0x02
 
-typedef struct {
-    uint32_t target_freq;    // Tần số đích (Tốc độ)
-    uint32_t total_pulses;   // Tổng số xung cần phát (Vị trí)
-    uint16_t ramp_time_ms;   // Thời gian tăng tốc (ms)
-    uint32_t current_pulse;  // Biến đếm số xung thực tế
-    float acceleration;      // Gia tốc tính toán được
-} Axis_Config;
 
-typedef enum __attribute__((packed)) {
-    STANDSTILL =0,      // Đang dừng
+typedef enum  uint16_t{
+    STANDSTILL =0x00U,      // Đang dừng
 	START_RUN,
     ACCELERATING,    // Đang tăng tốc
     CONSTANT_VEL,    // Chạy tốc độ đều
     DECELERATING,    // Đang giảm tốc
 	AXIS_ERROR,        // TRẠNG THÁI LỖI (Cần Reset mới chạy lại được)
 	HOME_STOPPING,
-	JOGGING_RUN
+	JOGGING_RUN,
+	AXIS_STATE_MAX =0xFFFFU
 } AxisState;
-typedef struct __attribute__((packed)) {
+typedef struct {
     // Cấu hình phần cứng
     TIM_HandleTypeDef* htim;
     TIM_HandleTypeDef* htim_counter;
@@ -57,25 +51,23 @@ typedef struct __attribute__((packed)) {
     volatile int32_t current_speed;     // Vận tốc hiện tại (Hz)
     volatile int32_t target_speed;      // Vận tốc mục tiêu (Hz)
     volatile float  accel;           // Gia tốc (Hz/ms)
-    uint8_t direction;
-    volatile AxisState state;       // Trạng thái hiện tại
-    uint8_t offset;
     volatile int32_t ramp_time;   // Bước tính toán ramp
     volatile uint32_t fulse_stop;   // Bước tính toán ramp
-    // Các cờ trạng thái giống PLC
-    volatile uint16_t busy;    // Bằng 1 khi lệnh đang thực thi (tăng tốc, chạy đều hoặc giảm tốc)
-	uint8_t done;    // Bằng 1 trong 1 chu kỳ khi đã đến đúng vị trí đích
-	uint8_t error;   // Bằng 1 khi trục gặp sự cố
-	uint8_t active;  // Bằng 1 khi trục đang có quyền điều khiển hardware
-	uint8_t indexaxis;
-	int32_t max_axis;
-	volatile uint8_t homing;
-	volatile uint8_t jogging;
-	uint16_t timer_jogging1khz;
-
 	volatile uint16_t *axis_busy_shadow;
 	volatile uint16_t *current_pos_shodow;
 	volatile uint16_t *current_speed_shadow;
+	volatile int32_t max_axis;
+	volatile uint16_t timer_jogging1khz;
+    volatile uint16_t state;       // Trạng thái hiện tại
+    volatile uint16_t busy;    // Bằng 1 khi lệnh đang thực thi (tăng tốc, chạy đều hoặc giảm tốc)
+    uint8_t offset;
+	uint8_t done;    // Bằng 1 trong 1 chu kỳ khi đã đến đúng vị trí đích
+	uint8_t error;   // Bằng 1 khi trục gặp sự cố
+	uint8_t active;  // Bằng 1 khi trục đang có quyền điều khiển hardware
+	volatile uint8_t indexaxis;
+	volatile uint8_t homing;
+	volatile uint8_t jogging;
+	volatile uint8_t direction;
 } MC_Axis_t;
 typedef struct {
 	volatile uint16_t target_position;    // Tọa độ mục tiêu (ví dụ: mm hoặc độ)

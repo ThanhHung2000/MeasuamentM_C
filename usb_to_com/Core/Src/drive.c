@@ -790,7 +790,7 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
     }
 	*axis->current_pos_shodow = (uint16_t)(axis->current_pos);
 	*axis->current_speed_shadow = (uint16_t)(axis->current_speed);
-	*axis->axis_busy_shadow = (uint16_t)(axis->state);
+	*axis->axis_busy_shadow = (axis->state);
 }
 void Copy_Data_Target(void)
 {
