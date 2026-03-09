@@ -134,6 +134,7 @@ int main(void)
   HMI_Init();
   Debug_init();
   HAL_TIM_Base_Start_IT(&htim7);
+  HAL_Delay(1000);
 //  GPIOA ->ODR |=(1<<10U);
   /* USER CODE END 2 */
 
