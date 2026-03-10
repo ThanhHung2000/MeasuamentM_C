@@ -112,6 +112,7 @@ void Gpio_input()
 }
 void Task_gpio_input(void)// copy dữ liệu sang địa chỉ 10000
 {
+	static uint32_t timer_10s=0x00U;
 	gpio_input=((uint32_t)Get_home_done()<<18U);// RESET gpio_input
 	uint8_t busy=Motor_Busy()>0x00U ? 0x01U:0x00U;
 	gpio_input |=(busy<<19U);
@@ -121,6 +122,18 @@ void Task_gpio_input(void)// copy dữ liệu sang địa chỉ 10000
 		{
 			gpio_input |=1UL<<i;
 		}
+	}
+	if(Motor_Busy()==0x00U)
+	{
+		timer_10s++;
+	}
+	else
+	{
+		timer_10s=0x00U;
+	}
+	if(timer_10s>=5000U)
+	{
+		gpio_input |=(1u<<5);
 	}
 	Copy_Gpio_Input();
 }

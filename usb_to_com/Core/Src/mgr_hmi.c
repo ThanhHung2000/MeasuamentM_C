@@ -14,9 +14,8 @@
 #include <math.h>
 #include "flash_data.h"
 #include "drive.h"
+#define MAX_TABLE_SIZE 0x05U
 
-
-static int8_t fisrtbit=0x00U;
 static volatile uint8_t Emergency = 0x00U;
 static volatile uint8_t home=0x01U;
 static volatile uint8_t home_done=0x00U;
@@ -69,7 +68,7 @@ Map_button_t Handle_buttonTable[NUM_BUTTON_HOLD] = {
 	{ Handle_Up     },
 	{ Handle_Down   }
 };
-Main_Handle_Controler Main_Table[5] =
+Main_Handle_Controler Main_Table[MAX_TABLE_SIZE] =
 {
 	{  Handle_Home       },
 	{  Handle_Set        },//
@@ -189,16 +188,20 @@ void Task_Run_HMI(void)
 }
 void Task_Main_Controler(void)
 {
+	static int32_t fisrtbit=0x00U;
 	if(home != 0x00U || Emergency == 0x01U) return;// vì home bằng 1 hoặc 2
-	uint8_t current_main = Main_controler->all;
-	fisrtbit = __builtin_ffs(current_main)-1;
-	if(fisrtbit >= 0)
+	uint32_t current_main =(uint32_t)Main_controler->all;
+	if(current_main != 0x00U)
 	{
-		if(Main_Table[fisrtbit].handler != NULL)
+		fisrtbit = __builtin_ffs((int32_t)current_main)-1;
+		if((fisrtbit >= 0) && (fisrtbit < MAX_TABLE_SIZE))
 		{
-			Main_Table[fisrtbit].handler();
-		}
+			if(Main_Table[fisrtbit].handler != NULL)
+			{
+				Main_Table[fisrtbit].handler();
+			}
 
+		}
 	}
 }
 // Giả sử P1, P2, P3 và dX, dY, Angle đã được tính ở bước Calibration
