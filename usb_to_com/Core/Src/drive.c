@@ -392,7 +392,7 @@ uint8_t Move_Home_3Step(volatile uint8_t * home_tep)// về home 3 giai đoạn
 				if(++time>=5U)
 				{
 					time =0x00U;
-					step=0x02U;
+					step=0x03U;
 					onetime=0x00U;
 				}
 			}
@@ -710,7 +710,7 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
 			}
         	break;
         case HOME_STOPPING:
-			if(axis->current_pos > 1400U)
+			if(axis->current_pos > 1500U)
 			{
 				axis->current_speed =SET_SPEED_1000HZ;
 			}
@@ -725,7 +725,7 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
 				if(++axis->timer_jogging1khz>=80U)
 				{
 					axis->timer_jogging1khz=0x00U;
-					axis->current_speed = SET_SPEED_500HZ + (uint32_t)((axis->accel)*triangle_array[axis->ramp_time]);
+					axis->current_speed = SET_SPEED_200HZ + (uint32_t)((axis->accel)*triangle_array[axis->ramp_time]);
 					axis->ramp_time++;
 					if(axis->ramp_time>=TIME_RAMPING)
 					{
