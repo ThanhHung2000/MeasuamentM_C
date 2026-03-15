@@ -134,6 +134,10 @@ void Task_gpio_input(void)// copy dữ liệu sang địa chỉ 10000
 	if(timer_10s>=5000U)
 	{
 		gpio_input |=(1u<<5);
+		if(timer_10s>=55000U)
+		{
+			timer_10s=0x00U;
+		}
 	}
 	Copy_Gpio_Input();
 }

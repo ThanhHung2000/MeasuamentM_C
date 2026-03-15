@@ -647,6 +647,11 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
 	uint32_t new_arr=0x00U;
     switch (axis->state)
     {
+		case START:
+		{
+			axis->state =START_RUN;
+		}
+		break;
 		case START_RUN:
 		{
 			Timer_PWM_Chanal_Start(axis);

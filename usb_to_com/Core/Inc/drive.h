@@ -26,6 +26,7 @@
 
 typedef enum  uint16_t{
     STANDSTILL =0x00U,      // Đang dừng
+	START,
 	START_RUN,
     ACCELERATING,    // Đang tăng tốc
     CONSTANT_VEL,    // Chạy tốc độ đều
