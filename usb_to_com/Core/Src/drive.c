@@ -199,7 +199,7 @@ void MC_MoveAbsolute(volatile MC_Axis_t* axis, int32_t pos, uint32_t speed)// m�
 
 		axis->delta_pos = axis->target_pos > axis->current_pos ? (axis->target_pos - axis->current_pos):(axis->current_pos - axis->target_pos);
 		// 4. Chuyển trạng thái sang Tăng tốc để bộ Handler bắt đầu làm việc
-		axis->state = START_RUN;
+		axis->state = START;
 		axis->busy = 0x01U;
 		*axis->axis_busy_shadow =0x01U;
 		axis->done = 0x00U;
@@ -650,6 +650,7 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
 		case START:
 		{
 			axis->state =START_RUN;
+			axis->ramp_time++;
 		}
 		break;
 		case START_RUN:
