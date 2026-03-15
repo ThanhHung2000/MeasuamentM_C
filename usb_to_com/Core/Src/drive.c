@@ -650,8 +650,11 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
     {
 		case START:
 		{
-			axis->state =START_RUN;
 			axis->ramp_time++;
+			if(axis->ramp_time>=0x03U)
+			{
+				axis->state =START_RUN;
+			}
 		}
 		break;
 		case START_RUN:
