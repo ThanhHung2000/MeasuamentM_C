@@ -203,6 +203,7 @@ void MC_MoveAbsolute(volatile MC_Axis_t* axis, int32_t pos, uint32_t speed)// m�
 		axis->busy = 0x01U;
 		*axis->axis_busy_shadow =0x01U;
 		axis->done = 0x00U;
+		axis->ramp_time=0x01U;
 	    axis->counter_pos=0x00U;
 	    axis->current_speed=SET_SPEED_500HZ;
 	    // CƯỠNG BỨC cập nhật giá trị từ vùng đệm vào thanh ghi thực thi CỦA timer đếm xung
