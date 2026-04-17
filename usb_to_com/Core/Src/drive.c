@@ -199,7 +199,7 @@ void MC_MoveAbsolute(volatile MC_Axis_t* axis, int32_t pos, uint32_t speed)// m�
 
 		axis->delta_pos = axis->target_pos > axis->current_pos ? (axis->target_pos - axis->current_pos):(axis->current_pos - axis->target_pos);
 		// 4. Chuyển trạng thái sang Tăng tốc để bộ Handler bắt đầu làm việc
-		axis->state = START;
+		axis->state = START_RUN;
 		axis->busy = 0x01U;
 		*axis->axis_busy_shadow =0x01U;
 		axis->done = 0x00U;
@@ -648,15 +648,15 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
 	uint32_t new_arr=0x00U;
     switch (axis->state)
     {
-		case START:
-		{
-			axis->ramp_time++;
-			if(axis->ramp_time>=0x03U)
-			{
-				axis->state =START_RUN;
-			}
-		}
-		break;
+//		case START:
+//		{
+//			axis->ramp_time++;
+//			if(axis->ramp_time>=0x03U)
+//			{
+//				axis->state =START_RUN;
+//			}
+//		}
+//		break;
 		case START_RUN:
 		{
 			Timer_PWM_Chanal_Start(axis);
@@ -771,14 +771,15 @@ void Rotbot_controler(volatile MC_Axis_t* axis,uint8_t index)
         }
         axis->offset=0x00U;
         axis->counter_pos = curent_counter;
-        if(axis->Get_Ready_Oxis()==0x00U)
-        {
-            axis->current_speed = 0x00U;
-            if(axis->state != AXIS_ERROR) axis->state = AXIS_ERROR;
-            axis->done = 0x01U;
-            axis->ramp_time=0x00U;
-            axis->fulse_stop=0x00U;
-        }
+        // tạm thời bỏ qua lỗi trục
+//        if(axis->Get_Ready_Oxis()==0x00U)
+//        {
+//            axis->current_speed = 0x00U;
+//            if(axis->state != AXIS_ERROR) axis->state = AXIS_ERROR;
+//            axis->done = 0x01U;
+//            axis->ramp_time=0x00U;
+//            axis->fulse_stop=0x00U;
+//        }
         if(axis->done == 0x01U)
         {
         	axis->homing=0x00U;
